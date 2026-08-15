@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for, session, render_template_string
+from flask import Flask, request, redirect, session, render_template_string
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -30,18 +30,22 @@ def init_db():
     conn.close()
 
 
+init_db()
+
+
 HTML = """
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Demo Wallet</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Demo Wallet</title>
+
     <style>
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
             background: #111827;
             color: white;
-            margin: 0;
         }
 
         .container {
@@ -52,174 +56,89 @@ HTML = """
 
         .card {
             background: #1f2937;
-            padding: 22px;
+            padding: 25px;
             border-radius: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
         }
 
         input {
             width: 100%;
             box-sizing: border-box;
-            padding: 13px;
+            padding: 14px;
             margin: 8px 0;
-            border-radius: 8px;
             border: none;
+            border-radius: 8px;
+            font-size: 16px;
         }
 
         button {
             width: 100%;
-            padding: 13px;
+            padding: 14px;
+            margin-top: 10px;
             border: none;
             border-radius: 8px;
             background: #22c55e;
             color: white;
             font-size: 16px;
-            margin-top: 8px;
+            font-weight: bold;
         }
 
-        a {
-            color: #60a5fa;
+        .btn {
+            display: block;
+            text-align: center;
+            padding: 14px;
+            margin-top: 10px;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
             text-decoration: none;
+        }
+
+        .danger {
+            background: #dc2626;
         }
 
         .balance {
             font-size: 32px;
-            font-weight: bold;
+            text-align: center;
             color: #22c55e;
+            font-weight: bold;
         }
 
         .error {
-            color: #f87171;
+            background: #7f1d1d;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
         }
 
         .success {
-            color: #4ade80;
+            background: #166534;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
+
 <body>
+
 <div class="container">
 
-{% if page == "home" %}
-
-<div class="card">
-    <h1>Demo Wallet</h1>
-    <p>Register or login to continue.</p>
-    <a href="/register">Register</a><br><br>
-    <a href="/login">Login</a>
-</div>
-
-{% elif page == "register" %}
-
-<div class="card">
-    <h2>Create Account</h2>
-
-    {% if error %}
-        <p class="error">{{ error }}</p>
+    {% if message %}
+        <div class="{{ message_type }}">
+            {{ message }}
+        </div>
     {% endif %}
 
-    <form method="POST">
-        <input name="username" placeholder="Username" required>
-        <input name="password" type="password" placeholder="Password" required>
-        <button type="submit">Register</button>
-    </form>
-
-    <p>Already have an account?
-        <a href="/login">Login</a>
-    </p>
-</div>
-
-{% elif page == "login" %}
-
-<div class="card">
-    <h2>Login</h2>
-
-    {% if error %}
-        <p class="error">{{ error }}</p>
-    {% endif %}
-
-    <form method="POST">
-        <input name="username" placeholder="Username" required>
-        <input name="password" type="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
-
-    <p>No account?
-        <a href="/register">Register</a>
-    </p>
-</div>
-
-{% elif page == "dashboard" %}
-
-<div class="card">
-    <h2>Welcome, {{ username }}</h2>
-
-    <p>Your demo balance:</p>
-    <div class="balance">{{ "%.2f"|format(balance) }}</div>
-</div>
-
-<div class="card">
-    <h3>Deposit Demo</h3>
-
-    <form method="POST" action="/deposit">
-        <input
-            name="amount"
-            type="number"
-            step="0.01"
-            min="1"
-            placeholder="Amount"
-            required
-        >
-        <button type="submit">Deposit</button>
-    </form>
-</div>
-
-<div class="card">
-    <h3>Withdraw Demo</h3>
-
-    <form method="POST" action="/withdraw">
-        <input
-            name="amount"
-            type="number"
-            step="0.01"
-            min="1"
-            placeholder="Amount"
-            required
-        >
-        <button type="submit">Withdraw</button>
-    </form>
-</div>
-
-<div class="card">
-    <h3>Game</h3>
-    <p>This is a demo game area.</p>
-    <a href="/game">Open Game</a>
-</div>
-
-<div class="card">
-    <a href="/logout">Logout</a>
-</div>
-
-{% elif page == "game" %}
-
-<div class="card">
-    <h2>Demo Game</h2>
-    <p>This game is for testing only.</p>
-
-    <p>Your balance:</p>
-    <div class="balance">{{ "%.2f"|format(balance) }}</div>
-
-    <form method="POST" action="/game">
-        <button type="submit">Play Demo Round</button>
-    </form>
-
-    <br>
-    <a href="/dashboard">Back to Dashboard</a>
-</div>
-
-{% endif %}
+    {{ content|safe }}
 
 </div>
+
 </body>
 </html>
 """
@@ -227,64 +146,123 @@ HTML = """
 
 @app.route("/")
 def home():
-    return render_template_string(HTML, page="home")
+    if "user_id" in session:
+        return redirect("/dashboard")
+
+    content = """
+    <div class="card">
+        <h1>💰 Demo Wallet</h1>
+        <p style="text-align:center;">
+            Deposit • Balance • Withdraw
+        </p>
+
+        <a class="btn" href="/register">Register</a>
+        <a class="btn" href="/login">Login</a>
+    </div>
+    """
+
+    return render_template_string(
+        HTML,
+        content=content,
+        message=None,
+        message_type="error"
+    )
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    error = None
 
     if request.method == "POST":
-        username = request.form["username"].strip()
-        password = request.form["password"]
 
-        if len(username) < 3:
-            error = "Username must be at least 3 characters."
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+
+        if not username or not password:
             return render_template_string(
-                HTML, page="register", error=error
+                HTML,
+                content=register_form(),
+                message="Username and password are required.",
+                message_type="error"
             )
 
-        if len(password) < 4:
-            error = "Password must be at least 4 characters."
-            return render_template_string(
-                HTML, page="register", error=error
-            )
+        password_hash = generate_password_hash(password)
 
         conn = get_db()
 
         try:
             conn.execute(
-                "INSERT INTO users (username, password, balance) VALUES (?, ?, ?)",
-                (
-                    username,
-                    generate_password_hash(password),
-                    0
-                )
+                "INSERT INTO users (username, password, balance) VALUES (?, ?, 0)",
+                (username, password_hash)
             )
 
             conn.commit()
             conn.close()
 
-            return redirect(url_for("login"))
+            return redirect("/login")
 
         except sqlite3.IntegrityError:
             conn.close()
-            error = "Username already exists."
+
+            return render_template_string(
+                HTML,
+                content=register_form(),
+                message="Username already exists.",
+                message_type="error"
+            )
 
     return render_template_string(
         HTML,
-        page="register",
-        error=error
+        content=register_form(),
+        message=None,
+        message_type="error"
     )
+
+
+def register_form():
+    return """
+    <div class="card">
+        <h2>Create Account</h2>
+
+        <form method="POST">
+
+            <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                required
+            >
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                required
+            >
+
+            <button type="submit">
+                Register
+            </button>
+
+        </form>
+
+        <a class="btn" href="/login">
+            Already have an account? Login
+        </a>
+
+        <a class="btn danger" href="/">
+            Home
+        </a>
+    </div>
+    """
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    error = None
 
     if request.method == "POST":
-        username = request.form["username"].strip()
-        password = request.form["password"]
+
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
 
         conn = get_db()
 
@@ -296,24 +274,70 @@ def login():
         conn.close()
 
         if user and check_password_hash(user["password"], password):
+
             session["user_id"] = user["id"]
             session["username"] = user["username"]
 
-            return redirect(url_for("dashboard"))
+            return redirect("/dashboard")
 
-        error = "Invalid username or password."
+        return render_template_string(
+            HTML,
+            content=login_form(),
+            message="Invalid username or password.",
+            message_type="error"
+        )
 
     return render_template_string(
         HTML,
-        page="login",
-        error=error
+        content=login_form(),
+        message=None,
+        message_type="error"
     )
+
+
+def login_form():
+    return """
+    <div class="card">
+        <h2>Login</h2>
+
+        <form method="POST">
+
+            <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                required
+            >
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                required
+            >
+
+            <button type="submit">
+                Login
+            </button>
+
+        </form>
+
+        <a class="btn" href="/register">
+            Create Account
+        </a>
+
+        <a class="btn danger" href="/">
+            Home
+        </a>
+    </div>
+    """
 
 
 @app.route("/dashboard")
 def dashboard():
+
     if "user_id" not in session:
-        return redirect(url_for("login"))
+        return redirect("/login")
 
     conn = get_db()
 
@@ -326,106 +350,226 @@ def dashboard():
 
     if not user:
         session.clear()
-        return redirect(url_for("login"))
+        return redirect("/login")
+
+    content = f"""
+    <div class="card">
+
+        <h1>Dashboard</h1>
+
+        <p style="text-align:center;">
+            Welcome, <b>{user["username"]}</b>
+        </p>
+
+        <div class="balance">
+            ${user["balance"]:.2f}
+        </div>
+
+        <p style="text-align:center;">
+            Current Balance
+        </p>
+
+        <a class="btn" href="/deposit">
+            💵 Deposit
+        </a>
+
+        <a class="btn" href="/withdraw">
+            💸 Withdraw
+        </a>
+
+        <a class="btn danger" href="/logout">
+            Logout
+        </a>
+
+    </div>
+    """
 
     return render_template_string(
         HTML,
-        page="dashboard",
-        username=user["username"],
-        balance=user["balance"]
+        content=content,
+        message=None,
+        message_type="error"
     )
 
 
-@app.route("/deposit", methods=["POST"])
+@app.route("/deposit", methods=["GET", "POST"])
 def deposit():
+
     if "user_id" not in session:
-        return redirect(url_for("login"))
+        return redirect("/login")
 
-    try:
-        amount = float(request.form["amount"])
-    except ValueError:
-        return redirect(url_for("dashboard"))
+    if request.method == "POST":
 
-    if amount <= 0:
-        return redirect(url_for("dashboard"))
+        try:
+            amount = float(request.form.get("amount", 0))
+        except ValueError:
+            amount = 0
 
-    conn = get_db()
+        if amount <= 0:
+            return render_template_string(
+                HTML,
+                content=deposit_form(),
+                message="Enter a valid amount.",
+                message_type="error"
+            )
 
-    conn.execute(
-        "UPDATE users SET balance = balance + ? WHERE id = ?",
-        (amount, session["user_id"])
+        conn = get_db()
+
+        conn.execute(
+            "UPDATE users SET balance = balance + ? WHERE id = ?",
+            (amount, session["user_id"])
+        )
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/dashboard")
+
+    return render_template_string(
+        HTML,
+        content=deposit_form(),
+        message=None,
+        message_type="error"
     )
 
-    conn.commit()
-    conn.close()
 
-    return redirect(url_for("dashboard"))
+def deposit_form():
+    return """
+    <div class="card">
+        <h2>Deposit</h2>
+
+        <p style="text-align:center;">
+            Demo deposit
+        </p>
+
+        <form method="POST">
+
+            <input
+                type="number"
+                name="amount"
+                step="0.01"
+                min="0.01"
+                placeholder="Amount"
+                required
+            >
+
+            <button type="submit">
+                Add Balance
+            </button>
+
+        </form>
+
+        <a class="btn" href="/dashboard">
+            Back to Dashboard
+        </a>
+    </div>
+    """
 
 
-@app.route("/withdraw", methods=["POST"])
+@app.route("/withdraw", methods=["GET", "POST"])
 def withdraw():
+
     if "user_id" not in session:
-        return redirect(url_for("login"))
+        return redirect("/login")
 
-    try:
-        amount = float(request.form["amount"])
-    except ValueError:
-        return redirect(url_for("dashboard"))
+    if request.method == "POST":
 
-    if amount <= 0:
-        return redirect(url_for("dashboard"))
+        try:
+            amount = float(request.form.get("amount", 0))
+        except ValueError:
+            amount = 0
 
-    conn = get_db()
+        if amount <= 0:
+            return render_template_string(
+                HTML,
+                content=withdraw_form(),
+                message="Enter a valid amount.",
+                message_type="error"
+            )
 
-    user = conn.execute(
-        "SELECT balance FROM users WHERE id = ?",
-        (session["user_id"],)
-    ).fetchone()
+        conn = get_db()
 
-    if user and user["balance"] >= amount:
+        user = conn.execute(
+            "SELECT balance FROM users WHERE id = ?",
+            (session["user_id"],)
+        ).fetchone()
+
+        if not user or user["balance"] < amount:
+            conn.close()
+
+            return render_template_string(
+                HTML,
+                content=withdraw_form(),
+                message="Insufficient balance.",
+                message_type="error"
+            )
+
         conn.execute(
             "UPDATE users SET balance = balance - ? WHERE id = ?",
             (amount, session["user_id"])
         )
+
         conn.commit()
+        conn.close()
 
-    conn.close()
-
-    return redirect(url_for("dashboard"))
-
-
-@app.route("/game", methods=["GET", "POST"])
-def game():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    conn = get_db()
-
-    user = conn.execute(
-        "SELECT * FROM users WHERE id = ?",
-        (session["user_id"],)
-    ).fetchone()
-
-    conn.close()
+        return redirect("/dashboard")
 
     return render_template_string(
         HTML,
-        page="game",
-        balance=user["balance"]
+        content=withdraw_form(),
+        message=None,
+        message_type="error"
     )
+
+
+def withdraw_form():
+    return """
+    <div class="card">
+        <h2>Withdraw</h2>
+
+        <p style="text-align:center;">
+            Demo withdrawal
+        </p>
+
+        <form method="POST">
+
+            <input
+                type="number"
+                name="amount"
+                step="0.01"
+                min="0.01"
+                placeholder="Amount"
+                required
+            >
+
+            <button type="submit">
+                Withdraw
+            </button>
+
+        </form>
+
+        <a class="btn" href="/dashboard">
+            Back to Dashboard
+        </a>
+    </div>
+    """
 
 
 @app.route("/logout")
 def logout():
+
     session.clear()
-    return redirect(url_for("home"))
+
+    return redirect("/")
+
+
+@app.route("/health")
+def health():
+    return "OK"
 
 
 if __name__ == "__main__":
-    init_db()
-
     app.run(
         host="0.0.0.0",
-        port=5000,
-        debug=False
-            )
+        port=10000
+    )
