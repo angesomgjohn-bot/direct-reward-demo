@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="am">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Direct Reward — Demo</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="brand">💎 DIRECT REWARD</div>
+  <div class="demo">DEMO ONLY</div>
+</header>
+
+<main>
+<section class="hero">
+  <h1>እንኳን ደህና መጡ</h1>
+  <p>ይህ የሙከራ የReward Dashboard ነው። እውነተኛ ገንዘብ አይቀበልም።</p>
+</section>
+
+<section id="auth" class="panel">
+  <h2>Register / Login</h2>
+  <input id="name" placeholder="ስም">
+  <input id="phone" placeholder="ስልክ ቁጥር">
+  <button onclick="login()">መጀመር</button>
+</section>
+
+<section id="dashboard" hidden>
+  <div class="grid">
+    <div class="card"><span>Demo Balance</span><strong id="balance">0 ETB</strong></div>
+    <div class="card"><span>Demo Rewards</span><strong id="rewards">0 ETB</strong></div>
+    <div class="card"><span>Referral</span><strong id="refcount">0</strong></div>
+  </div>
+
+  <div class="panel">
+    <h2 id="welcome"></h2>
+    <div class="ref"><span id="refLink"></span><button onclick="copyRef()">Copy</button></div>
+  </div>
+
+  <div class="panel">
+    <h2>📦 Demo Packages</h2>
+    <p class="muted">500 ETB እስከ 50,000 ETB — ለማሳያ ብቻ።</p>
+    <div id="packages" class="packages"></div>
+  </div>
+
+  <div class="panel">
+    <h2>💸 Demo Withdrawal</h2>
+    <p>Minimum: 200 ETB · Demo fee: 10%</p>
+    <input id="withdrawAmount" type="number" min="200" placeholder="የሚወጣ መጠን">
+    <button onclick="withdrawDemo()">Withdraw</button>
+    <p id="message"></p>
+  </div>
+
+  <div class="panel">
+    <h2>📜 Transaction History</h2>
+    <div id="history" class="history">ምንም ግብይት የለም።</div>
+  </div>
+
+  <button class="logout" onclick="location.reload()">ውጣ</button>
+</section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
