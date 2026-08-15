@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nexa Rewards — Demo</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div><div class="brand">Nexa Rewards</div><span class="badge">DEMO</span></div>
+  <div class="bal"><small>Balance</small><b id="balance">Br 0.00</b></div>
+</header>
+<main>
+<section class="hero"><h1>Welcome to Nexa Rewards</h1><p>Manage your rewards, plans and referrals in one place.</p></section>
+
+<section class="quick">
+<button onclick="openModal('deposit')">▣<span>Recharge</span></button>
+<button onclick="openModal('withdraw')">◉<span>Withdraw</span></button>
+<button onclick="toast('Service section ready.')">◌<span>Service</span></button>
+<button onclick="toast('Channel link can be added here.')">➤<span>Channel</span></button>
+</section>
+
+<section class="panel">
+<div class="title"><h2>Rewards Plans</h2><small>Demo catalog — no real-money transactions</small></div>
+<div class="plans">
+<article class="plan"><div class="pic">🍅</div><div><em>Quota 0/1</em><h3>Plan A</h3><strong class="price">Br 570.00</strong><p>Daily reward: Br 70</p><p>Period: 160 days</p><p>Projected reward: Br 11200</p><button class="buy" onclick="selectPlan('Plan A')">🛒 Buy now</button></div></article>
+<article class="plan"><div class="pic onion">🧅</div><div><em>Quota 0/2</em><h3>Plan B</h3><strong class="price">Br 1770.00</strong><p>Daily reward: Br 230</p><p>Period: 150 days</p><p>Projected reward: Br 34500</p><button class="buy" onclick="selectPlan('Plan B')">🛒 Buy now</button></div></article>
+<article class="plan"><div class="pic leaf">🌿</div><div><em>Quota 0/2</em><h3>Plan C</h3><strong class="price">Br 3770.00</strong><p>Reward details configurable</p><p>Period configurable</p><p>For demo display only</p><button class="buy" onclick="selectPlan('Plan C')">🛒 Buy now</button></div></article>
+</div>
+</section>
+
+<section class="panel"><h2>My Account</h2>
+<div class="stats"><div><small>Rewards</small><b id="rewards">Br 0.00</b></div><div><small>Referrals</small><b>0</b></div><div><small>Selected plan</small><b id="selected">None</b></div></div>
+</section>
+
+<section class="panel" id="team"><h2>Team / Referral</h2><p>Referral link for the demo.</p>
+<div class="ref"><input id="ref" readonly value="https://example.com/register?ref=DEMO"><button onclick="copyRef()">Copy</button></div></section>
+</main>
+
+<nav><button onclick="topPage()">⌂<span>Home</span></button><button onclick="openModal('deposit')">▣<span>Income</span></button><button onclick="document.getElementById('team').scrollIntoView({behavior:'smooth'})">♧<span>Team</span></button><button onclick="copyRef()">↗<span>Share</span></button><button onclick="document.getElementById('team').scrollIntoView({behavior:'smooth'})">●<span>My</span></button></nav>
+
+<div id="modal" class="modal hidden"><div class="modalbox"><button class="x" onclick="closeModal()">×</button>
+<h2 id="mtitle">Recharge</h2>
+<div class="warning">Demo only. Never enter CBE PIN, OTP, password or card details here.</div>
+<label>Amount (Br)</label><input id="amount" type="number" min="1" placeholder="e.g. 500">
+<label>Reference / FX code</label><input id="reference" placeholder="Demo reference code">
+<button class="primary" onclick="submitRequest()">Submit demo request</button>
+</div></div>
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+</body></html>
