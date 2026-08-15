@@ -1,100 +1,1068 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="am">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Direct Rewards</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Nexa Rewards</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6fa;
+      color: #182033;
+    }
+
+    header {
+      background: #172033;
+      color: white;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .demo {
+      background: #f3c443;
+      color: #172033;
+      padding: 10px 18px;
+      border-radius: 25px;
+      font-weight: bold;
+    }
+
+    main {
+      max-width: 900px;
+      margin: auto;
+      padding: 25px 16px 50px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #31466b, #506b96);
+      color: white;
+      padding: 35px 28px;
+      border-radius: 28px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: 42px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .panel,
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 25px;
+      margin-bottom: 18px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.06);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    input {
+      width: 100%;
+      padding: 17px;
+      border: 1px solid #d5d9e0;
+      border-radius: 14px;
+      font-size: 16px;
+      margin: 7px 0;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #31466b;
+    }
+
+    button {
+      border: 0;
+      background: #172033;
+      color: white;
+      padding: 14px 22px;
+      border-radius: 13px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    button:hover {
+      opacity: .9;
+    }
+
+    .linkBtn {
+      background: transparent;
+      color: #31466b;
+      padding: 5px;
+      margin-left: 5px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 18px;
+    }
+
+    .stat span {
+      display: block;
+      color: #727986;
+      margin-bottom: 10px;
+    }
+
+    .stat strong {
+      font-size: 27px;
+    }
+
+    .package {
+      border: 1px solid #e0e3e8;
+      border-radius: 18px;
+      padding: 18px;
+      margin: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .package strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    .package small {
+      color: #727986;
+    }
+
+    .package button {
+      white-space: nowrap;
+    }
+
+    .history-item {
+      padding: 15px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .history-item:last-child {
+      border-bottom: 0;
+    }
+
+    .success {
+      color: #16733b;
+      margin-top: 10px;
+    }
+
+    .error {
+      color: #b42318;
+      margin-top: 10px;
+    }
+
+    .muted {
+      color: #737985;
+    }
+
+    .logout {
+      background: #b42318;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .welcome {
+      font-size: 30px;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 650px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 34px;
+      }
+
+      .package {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .package button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
 <header>
-  <div class="brand">💎 DIRECT REWARDS</div>
+  <div class="brand">💎 NEXA REWARDS</div>
   <div class="demo">DEMO ONLY</div>
 </header>
 
 <main>
 
-<section class="hero">
-  <h1>እንኳን ደህና መጡ</h1>
-  <p>የእርስዎ Reward Dashboard እዚህ ይገኛል።</p>
-</section>
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Welcome.</h1>
+    <p>
+      Your Nexa Rewards Dashboard is available here.
+      This is a demonstration platform and does not process real money.
+    </p>
+  </section>
 
-<!-- REGISTER -->
-<section id="register" class="panel">
-  <h2>Register</h2>
 
-  <input id="regName" type="text" placeholder="ስም">
+  <!-- REGISTER -->
+  <section id="registerPanel" class="panel">
 
-  <input id="regPhone" type="tel" placeholder="ስልክ ቁጥር">
+    <h2>Register</h2>
 
-  <input id="regPassword" type="password" placeholder="ፓስዎርድ">
+    <input
+      id="regName"
+      type="text"
+      placeholder="Name"
+    >
 
-  <input id="regConfirm" type="password" placeholder="ኮንፊርም ፓስዎርድ">
+    <input
+      id="regPhone"
+      type="tel"
+      placeholder="Phone number"
+    >
 
-  <button onclick="register()">Register</button>
+    <input
+      id="regPassword"
+      type="password"
+      placeholder="Password"
+    >
 
-  <p id="registerMessage"></p>
+    <input
+      id="regConfirm"
+      type="password"
+      placeholder="Confirm password"
+    >
 
-  <p>
-    አካውንት አለዎት?
-    <button class="linkBtn" onclick="showLogin()">Login</button>
-  </p>
-</section>
+    <button onclick="registerUser()">Register</button>
 
-<!-- LOGIN -->
-<section id="login" class="panel" hidden>
-  <h2>Login</h2>
+    <p id="registerMessage"></p>
 
-  <input id="loginPhone" type="tel" placeholder="ስልክ ቁጥር">
+    <p>
+      Already have an account?
+      <button class="linkBtn" onclick="showLogin()">Login</button>
+    </p>
 
-  <input id="loginPassword" type="password" placeholder="ፓስዎርድ">
+  </section>
 
-  <button onclick="login()">Login</button>
 
-  <p id="loginMessage"></p>
+  <!-- LOGIN -->
+  <section id="loginPanel" class="panel hidden">
 
-  <p>
-    አካውንት የለዎትም?
-    <button class="linkBtn" onclick="showRegister()">Register</button>
-  </p>
-</section>
+    <h2>Login</h2>
 
-<!-- DASHBOARD -->
-<section id="dashboard" hidden>
+    <input
+      id="loginPhone"
+      type="tel"
+      placeholder="Phone number"
+    >
 
-  <div class="card">
-    <h2 id="welcome"></h2>
-    <p>Welcome to your dashboard.</p>
-  </div>
+    <input
+      id="loginPassword"
+      type="password"
+      placeholder="Password"
+    >
 
-  <div class="grid">
+    <button onclick="loginUser()">Login</button>
 
+    <p id="loginMessage"></p>
+
+    <p>
+      Don't have an account?
+      <button class="linkBtn" onclick="showRegister()">Register</button>
+    </p>
+
+  </section>
+
+
+  <!-- DASHBOARD -->
+  <section id="dashboard" class="hidden">
+
+    <!-- WELCOME -->
     <div class="card">
-      <span>Balance</span>
-      <strong id="balance">0 ETB</strong>
+      <h2 id="welcome" class="welcome"></h2>
+      <p>Welcome to your Nexa Rewards dashboard.</p>
     </div>
 
-    <div class="card">
-      <span>Rewards</span>
-      <strong id="rewards">0 ETB</strong>
+
+    <!-- STATS -->
+    <div class="grid">
+
+      <div class="card stat">
+        <span>Balance</span>
+        <strong id="balance">0 ETB</strong>
+      </div>
+
+      <div class="card stat">
+        <span>Rewards</span>
+        <strong id="rewards">0 ETB</strong>
+      </div>
+
+      <div class="card stat">
+        <span>Referrals</span>
+        <strong id="referrals">0</strong>
+      </div>
+
     </div>
 
-    <div class="card">
-      <span>Referrals</span>
-      <strong id="refcount">0</strong>
+
+    <!-- PACKAGES -->
+    <div class="panel">
+
+      <h2>📦 Packages</h2>
+
+      <p class="muted">
+        Demo packages — no real money is processed.
+      </p>
+
+      <div id="packages"></div>
+
     </div>
 
-  </div>
 
-  <button onclick="logout()">Logout</button>
+    <!-- DEPOSIT -->
+    <div class="panel">
 
-</section>
+      <h2>💰 Deposit</h2>
+
+      <p class="muted">
+        Demo deposit only.
+      </p>
+
+      <input
+        id="depositAmount"
+        type="number"
+        min="1"
+        placeholder="Enter demo amount"
+      >
+
+      <button onclick="depositDemo()">
+        Deposit
+      </button>
+
+      <p id="depositMessage"></p>
+
+    </div>
+
+
+    <!-- BANK ATTACHMENT -->
+    <div class="panel">
+
+      <h2>🏦 Bank Attachment</h2>
+
+      <p class="muted">
+        Demo attachment area. No real payment is verified.
+      </p>
+
+      <input
+        id="bankAttachment"
+        type="file"
+        accept="image/*,.pdf"
+      >
+
+      <button onclick="attachBank()">
+        Attach
+      </button>
+
+      <p id="attachmentMessage"></p>
+
+    </div>
+
+
+    <!-- WITHDRAW -->
+    <div class="panel">
+
+      <h2>📤 Withdraw</h2>
+
+      <p class="muted">
+        Demo withdrawal only.
+      </p>
+
+      <input
+        id="withdrawAmount"
+        type="number"
+        min="1"
+        placeholder="Enter demo amount"
+      >
+
+      <button onclick="withdrawDemo()">
+        Withdraw
+      </button>
+
+      <p id="withdrawMessage"></p>
+
+    </div>
+
+
+    <!-- HISTORY -->
+    <div class="panel">
+
+      <h2>📜 Transaction History</h2>
+
+      <div id="history">
+        <p class="muted">No transactions yet.</p>
+      </div>
+
+    </div>
+
+
+    <!-- LOGOUT -->
+    <button class="logout" onclick="logout()">
+      Logout
+    </button>
+
+  </section>
 
 </main>
 
-<script src="app.js"></script>
+
+<script>
+
+  /*
+    NEXA REWARDS
+    DEMO ONLY
+
+    All data is stored locally in the browser.
+    No real money/payment is processed.
+  */
+
+
+  let user = JSON.parse(localStorage.getItem("nexaUser")) || null;
+
+
+  // -------------------------
+  // START
+  // -------------------------
+
+  document.addEventListener("DOMContentLoaded", function () {
+
+    renderPackages();
+
+    if (user) {
+      showDashboard();
+    } else {
+      showRegister();
+    }
+
+  });
+
+
+  // -------------------------
+  // REGISTER
+  // -------------------------
+
+  function registerUser() {
+
+    const name =
+      document.getElementById("regName").value.trim();
+
+    const phone =
+      document.getElementById("regPhone").value.trim();
+
+    const password =
+      document.getElementById("regPassword").value;
+
+    const confirm =
+      document.getElementById("regConfirm").value;
+
+    const message =
+      document.getElementById("registerMessage");
+
+
+    if (!name || !phone || !password || !confirm) {
+
+      message.className = "error";
+      message.textContent =
+        "Please fill in all fields.";
+
+      return;
+    }
+
+
+    if (password.length < 4) {
+
+      message.className = "error";
+      message.textContent =
+        "Password must be at least 4 characters.";
+
+      return;
+    }
+
+
+    if (password !== confirm) {
+
+      message.className = "error";
+      message.textContent =
+        "Passwords do not match.";
+
+      return;
+    }
+
+
+    user = {
+
+      name: name,
+
+      phone: phone,
+
+      password: password,
+
+      balance: 0,
+
+      rewards: 0,
+
+      referrals: 0,
+
+      history: []
+
+    };
+
+
+    localStorage.setItem(
+      "nexaUser",
+      JSON.stringify(user)
+    );
+
+
+    message.className = "success";
+    message.textContent =
+      "Registration successful.";
+
+
+    setTimeout(function () {
+
+      showDashboard();
+
+    }, 700);
+
+  }
+
+
+  // -------------------------
+  // LOGIN
+  // -------------------------
+
+  function loginUser() {
+
+    const phone =
+      document.getElementById("loginPhone").value.trim();
+
+    const password =
+      document.getElementById("loginPassword").value;
+
+    const message =
+      document.getElementById("loginMessage");
+
+
+    const saved =
+      JSON.parse(localStorage.getItem("nexaUser"));
+
+
+    if (!saved) {
+
+      message.className = "error";
+      message.textContent =
+        "No demo account found. Please register first.";
+
+      return;
+    }
+
+
+    if (
+      phone !== saved.phone ||
+      password !== saved.password
+    ) {
+
+      message.className = "error";
+      message.textContent =
+        "Incorrect phone number or password.";
+
+      return;
+    }
+
+
+    user = saved;
+
+    showDashboard();
+
+  }
+
+
+  // -------------------------
+  // SHOW REGISTER
+  // -------------------------
+
+  function showRegister() {
+
+    document
+      .getElementById("registerPanel")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("loginPanel")
+      .classList.add("hidden");
+
+    document
+      .getElementById("dashboard")
+      .classList.add("hidden");
+
+  }
+
+
+  // -------------------------
+  // SHOW LOGIN
+  // -------------------------
+
+  function showLogin() {
+
+    document
+      .getElementById("registerPanel")
+      .classList.add("hidden");
+
+    document
+      .getElementById("loginPanel")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("dashboard")
+      .classList.add("hidden");
+
+  }
+
+
+  // -------------------------
+  // SHOW DASHBOARD
+  // -------------------------
+
+  function showDashboard() {
+
+    if (!user) {
+
+      showRegister();
+
+      return;
+
+    }
+
+
+    document
+      .getElementById("registerPanel")
+      .classList.add("hidden");
+
+    document
+      .getElementById("loginPanel")
+      .classList.add("hidden");
+
+    document
+      .getElementById("dashboard")
+      .classList.remove("hidden");
+
+
+    document.getElementById("welcome").textContent =
+      "Welcome, " + user.name + "!";
+
+
+    render();
+
+  }
+
+
+  // -------------------------
+  // PACKAGES
+  // -------------------------
+
+  function renderPackages() {
+
+    const packages =
+      document.getElementById("packages");
+
+    packages.innerHTML = "";
+
+
+    for (
+      let amount = 500;
+      amount <= 50000;
+      amount += 500
+    ) {
+
+      const box =
+        document.createElement("div");
+
+      box.className = "package";
+
+
+      box.innerHTML = `
+
+        <div>
+          <strong>${amount.toLocaleString()} ETB</strong>
+          <small>Demo Package</small>
+        </div>
+
+        <button onclick="selectPackage(${amount})">
+          Select
+        </button>
+
+      `;
+
+
+      packages.appendChild(box);
+
+    }
+
+  }
+
+
+  // -------------------------
+  // SELECT PACKAGE
+  // -------------------------
+
+  function selectPackage(amount) {
+
+    document.getElementById(
+      "depositAmount"
+    ).value = amount;
+
+
+    document
+      .getElementById("depositAmount")
+      .scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+  }
+
+
+  // -------------------------
+  // DEMO DEPOSIT
+  // -------------------------
+
+  function depositDemo() {
+
+    const amount =
+      Number(
+        document.getElementById(
+          "depositAmount"
+        ).value
+      );
+
+
+    const message =
+      document.getElementById(
+        "depositMessage"
+      );
+
+
+    if (!amount || amount <= 0) {
+
+      message.className = "error";
+      message.textContent =
+        "Enter a valid demo amount.";
+
+      return;
+    }
+
+
+    if (amount > 50000) {
+
+      message.className = "error";
+      message.textContent =
+        "Maximum demo package is 50,000 ETB.";
+
+      return;
+    }
+
+
+    user.balance += amount;
+
+
+    addHistory(
+      "Demo Deposit",
+      amount
+    );
+
+
+    saveUser();
+
+    render();
+
+
+    message.className = "success";
+    message.textContent =
+      "Demo deposit added successfully.";
+
+  }
+
+
+  // -------------------------
+  // BANK ATTACHMENT
+  // -------------------------
+
+  function attachBank() {
+
+    const file =
+      document.getElementById(
+        "bankAttachment"
+      ).files[0];
+
+    const message =
+      document.getElementById(
+        "attachmentMessage"
+      );
+
+
+    if (!file) {
+
+      message.className = "error";
+      message.textContent =
+        "Please select a demo file.";
+
+      return;
+    }
+
+
+    message.className = "success";
+    message.textContent =
+      "Demo attachment added: " +
+      file.name;
+
+  }
+
+
+  // -------------------------
+  // DEMO WITHDRAW
+  // -------------------------
+
+  function withdrawDemo() {
+
+    const amount =
+      Number(
+        document.getElementById(
+          "withdrawAmount"
+        ).value
+      );
+
+
+    const message =
+      document.getElementById(
+        "withdrawMessage"
+      );
+
+
+    if (!amount || amount <= 0) {
+
+      message.className = "error";
+      message.textContent =
+        "Enter a valid demo amount.";
+
+      return;
+    }
+
+
+    if (amount > user.balance) {
+
+      message.className = "error";
+      message.textContent =
+        "Insufficient demo balance.";
+
+      return;
+    }
+
+
+    user.balance -= amount;
+
+
+    addHistory(
+      "Demo Withdrawal",
+      -amount
+    );
+
+
+    saveUser();
+
+    render();
+
+
+    message.className = "success";
+    message.textContent =
+      "Demo withdrawal recorded.";
+
+  }
+
+
+  // -------------------------
+  // HISTORY
+  // -------------------------
+
+  function addHistory(type, amount) {
+
+    if (!user.history) {
+
+      user.history = [];
+
+    }
+
+
+    user.history.unshift({
+
+      type: type,
+
+      amount: amount,
+
+      date: new Date().toLocaleString()
+
+    });
+
+  }
+
+
+  // -------------------------
+  // RENDER
+  // -------------------------
+
+  function render() {
+
+    document.getElementById(
+      "balance"
+    ).textContent =
+      user.balance.toLocaleString() + " ETB";
+
+
+    document.getElementById(
+      "rewards"
+    ).textContent =
+      user.rewards.toLocaleString() + " ETB";
+
+
+    document.getElementById(
+      "referrals"
+    ).textContent =
+      user.referrals;
+
+
+    renderHistory();
+
+  }
+
+
+  // -------------------------
+  // RENDER HISTORY
+  // -------------------------
+
+  function renderHistory() {
+
+    const history =
+      document.getElementById("history");
+
+
+    if (
+      !user.history ||
+      user.history.length === 0
+    ) {
+
+      history.innerHTML =
+        '<p class="muted">No transactions yet.</p>';
+
+      return;
+
+    }
+
+
+    history.innerHTML = "";
+
+
+    user.history.forEach(function (item) {
+
+      const div =
+        document.createElement("div");
+
+      div.className =
+        "history-item";
+
+
+      const sign =
+        item.amount >= 0 ? "+" : "";
+
+
+      div.innerHTML = `
+
+        <strong>${item.type}</strong><br>
+
+        <span>
+          ${sign}${item.amount.toLocaleString()} ETB
+        </span>
+
+        <br>
+
+        <small class="muted">
+          ${item.date}
+        </small>
+
+      `;
+
+
+      history.appendChild(div);
+
+    });
+
+  }
+
+
+  // -------------------------
+  // SAVE
+  // -------------------------
+
+  function saveUser() {
+
+    localStorage.setItem(
+      "nexaUser",
+      JSON.stringify(user)
+    );
+
+  }
+
+
+  // -------------------------
+  // LOGOUT
+  // -------------------------
+
+  function logout() {
+
+    user = null;
+
+    showLogin();
+
+  }
+
+</script>
 
 </body>
 </html>
