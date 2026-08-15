@@ -1,242 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="am">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Direct Reward</title>
+  <title>Direct Rewards</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <header>
-  <div class="brand">💎 DIRECT REWARD</div>
+  <div class="brand">💎 DIRECT REWARDS</div>
   <div class="demo">DEMO ONLY</div>
 </header>
 
 <main>
 
-  <section class="hero">
-    <h1>እርስዎ ይግቡ</h1>
-    <p>የ Reward Dashboard ውስጥ እንኳን ደህና መጡ</p>
-  </section>
+<section class="hero">
+  <h1>እንኳን ደህና መጡ</h1>
+  <p>የእርስዎ Reward Dashboard እዚህ ይገኛል።</p>
+</section>
 
+<!-- REGISTER -->
+<section id="register" class="panel">
+  <h2>Register</h2>
 
-  <!-- AUTH -->
-  <section id="auth" class="panel">
+  <input id="regName" type="text" placeholder="ስም">
 
-    <!-- AUTH BUTTONS -->
-    <div class="auth-tabs">
-      <button type="button" onclick="showRegister()">Register</button>
-      <button type="button" onclick="showLogin()">Login</button>
+  <input id="regPhone" type="tel" placeholder="ስልክ ቁጥር">
+
+  <input id="regPassword" type="password" placeholder="ፓስዎርድ">
+
+  <input id="regConfirm" type="password" placeholder="ኮንፊርም ፓስዎርድ">
+
+  <button onclick="register()">Register</button>
+
+  <p id="registerMessage"></p>
+
+  <p>
+    አካውንት አለዎት?
+    <button class="linkBtn" onclick="showLogin()">Login</button>
+  </p>
+</section>
+
+<!-- LOGIN -->
+<section id="login" class="panel" hidden>
+  <h2>Login</h2>
+
+  <input id="loginPhone" type="tel" placeholder="ስልክ ቁጥር">
+
+  <input id="loginPassword" type="password" placeholder="ፓስዎርድ">
+
+  <button onclick="login()">Login</button>
+
+  <p id="loginMessage"></p>
+
+  <p>
+    አካውንት የለዎትም?
+    <button class="linkBtn" onclick="showRegister()">Register</button>
+  </p>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard" hidden>
+
+  <div class="card">
+    <h2 id="welcome"></h2>
+    <p>Welcome to your dashboard.</p>
+  </div>
+
+  <div class="grid">
+
+    <div class="card">
+      <span>Balance</span>
+      <strong id="balance">0 ETB</strong>
     </div>
 
-
-    <!-- REGISTER -->
-    <div id="registerBox">
-
-      <h2>Register</h2>
-
-      <input
-        id="registerName"
-        type="text"
-        placeholder="ስም"
-        autocomplete="name"
-      >
-
-      <input
-        id="registerPhone"
-        type="text"
-        placeholder="ስልክ ቁጥር"
-        autocomplete="tel"
-      >
-
-      <input
-        id="registerPassword"
-        type="password"
-        placeholder="ፓስዎርድ"
-        autocomplete="new-password"
-      >
-
-      <input
-        id="confirmPassword"
-        type="password"
-        placeholder="ኮንፊርም ፓስዎርድ"
-        autocomplete="new-password"
-      >
-
-      <button type="button" onclick="registerUser()">
-        Register
-      </button>
-
-      <p id="registerMessage"></p>
-
-      <p>
-        አካውንት አለዎት?
-        <button type="button" class="linkBtn" onclick="showLogin()">
-          Login
-        </button>
-      </p>
-
+    <div class="card">
+      <span>Rewards</span>
+      <strong id="rewards">0 ETB</strong>
     </div>
 
-
-    <!-- LOGIN -->
-    <div id="loginBox" hidden>
-
-      <h2>Login</h2>
-
-      <input
-        id="loginName"
-        type="text"
-        placeholder="ስም"
-        autocomplete="username"
-      >
-
-      <input
-        id="loginPassword"
-        type="password"
-        placeholder="ፓስዎርድ"
-        autocomplete="current-password"
-      >
-
-      <button type="button" onclick="loginUser()">
-        Login
-      </button>
-
-      <p id="loginMessage"></p>
-
-      <p>
-        አካውንት የለዎትም?
-        <button type="button" class="linkBtn" onclick="showRegister()">
-          Register
-        </button>
-      </p>
-
+    <div class="card">
+      <span>Referrals</span>
+      <strong id="refcount">0</strong>
     </div>
 
-  </section>
+  </div>
 
+  <button onclick="logout()">Logout</button>
 
-  <!-- DASHBOARD -->
-  <section id="dashboard" hidden>
-
-    <div class="grid">
-
-      <div class="card">
-        <span>Demo Balance</span>
-        <strong id="balance">0 ETB</strong>
-      </div>
-
-      <div class="card">
-        <span>Demo Rewards</span>
-        <strong id="rewards">0 ETB</strong>
-      </div>
-
-      <div class="card">
-        <span>Referrals</span>
-        <strong id="refcount">0</strong>
-      </div>
-
-    </div>
-
-
-    <div class="panel">
-      <h2 id="welcome"></h2>
-
-      <div class="ref">
-        <span>Referral Link:</span>
-        <strong id="refLink"></strong>
-      </div>
-    </div>
-
-
-    <!-- PACKAGES -->
-    <div class="panel">
-
-      <h2>📦 Packages</h2>
-
-      <p class="muted">
-        500 ETB እስከ 50,000 ETB
-      </p>
-
-      <div id="packages" class="packages"></div>
-
-    </div>
-
-
-    <!-- WITHDRAW -->
-    <div class="panel">
-
-      <h2>💸 Withdrawal</h2>
-
-      <p>
-        Minimum: 200 ETB · Demo fee: 10%
-      </p>
-
-      <input
-        id="withdrawAmount"
-        type="number"
-        min="200"
-        placeholder="የሚወጣውን መጠን ያስገቡ"
-      >
-
-      <button type="button" onclick="withdrawDemo()">
-        Withdraw
-      </button>
-
-      <p id="message"></p>
-
-    </div>
-
-
-    <!-- HISTORY -->
-    <div class="panel">
-
-      <h2>📜 Transaction History</h2>
-
-      <div id="history" class="history">
-        <p>ምንም transaction የለም።</p>
-      </div>
-
-    </div>
-
-
-    <button class="logout" type="button" onclick="logout()">
-      Logout
-    </button>
-
-  </section>
+</section>
 
 </main>
 
-
 <script src="app.js"></script>
 
-<script>
-
-function showRegister() {
-  document.getElementById("registerBox").hidden = false;
-  document.getElementById("loginBox").hidden = true;
-}
-
-function showLogin() {
-  document.getElementById("registerBox").hidden = true;
-  document.getElementById("loginBox").hidden = false;
-}
-
-function registerUser() {
-
-  const name = document.getElementById("registerName").value.trim();
-  const phone = document.getElementById("registerPhone").value.trim();
-  const password = document.getElementById("registerPassword").value;
-  const confirm = document.getElementById("confirmPassword").value;
-  const msg = document.getElementById("registerMessage");
-
-  if (!name || !phone || !password || !confirm) {
-    msg.textContent = "እባክዎ ሁሉንም ቦታ ይሙሉ።";
-    return;
-  }
-
-  if (password.length < 6) {
-    msg.textContent = "ፓስዎርድ ቢያንስ 6 ቁምፊ ይሁን።
+</body>
+</html>
