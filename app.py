@@ -1,234 +1,388 @@
 from flask import Flask, request, redirect, session, render_template_string
 import sqlite3
+import os
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 app = Flask(__name__)
-app.secret_key = "nexa-demo-secret-key"
+app.secret_key = os.environ.get("SECRET_KEY", "nexa-change-this-secret")
 
-DB = "nexa_demo.db"
+DB = "nexa.db"
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# -------------------------------------------------
+# JOB PLANS
+# These are work/task packages, not investment plans.
+# -------------------------------------------------
+
+PLANS = [
+    {
+        "name": "Plan A",
+        "price": 500,
+        "daily": 70,
+        "days": 165,
+        "total": 11550,
+        "description": "Entry-level digital tasks and assignments."
+    },
+    {
+        "name": "Plan B",
+        "price": 1000,
+        "daily": 140,
+        "days": 165,
+        "total": 23100,
+        "description": "Standard digital tasks and assignments."
+    },
+    {
+        "name": "Plan C",
+        "price": 2500,
+        "daily": 350,
+        "days": 165,
+        "total": 57750,
+        "description": "Intermediate task package."
+    },
+    {
+        "name": "Plan D",
+        "price": 5000,
+        "daily": 700,
+        "days": 165,
+        "total": 115500,
+        "description": "Advanced digital work package."
+    },
+    {
+        "name": "Plan E",
+        "price": 10000,
+        "daily": 1400,
+        "days": 165,
+        "total": 231000,
+        "description": "Professional task package."
+    },
+    {
+        "name": "Plan F",
+        "price": 25000,
+        "daily": 3500,
+        "days": 165,
+        "total": 577500,
+        "description": "Large-volume work package."
+    },
+    {
+        "name": "Plan G",
+        "price": 50000,
+        "daily": 7000,
+        "days": 165,
+        "total": 1155000,
+        "description": "Large business task package."
+    }
+]
 
 
-def get_db():
-    conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
-    return conn
+# -------------------------------------------------
+# DATABASE
+# -------------------------------------------------
+
+def db():
+    con = sqlite3.connect(DB)
+    con.row_factory = sqlite3.Row
+    return con
 
 
 def init_db():
-    conn = get_db()
+    con = db()
 
-    conn.execute("""
+    con.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
             balance REAL DEFAULT 0,
-            total_income REAL DEFAULT 0
+            total_earned REAL DEFAULT 0,
+            plan TEXT DEFAULT '',
+            created_at TEXT NOT NULL
         )
     """)
 
-    conn.execute("""
+    con.execute("""
         CREATE TABLE IF NOT EXISTS transactions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
-            type TEXT NOT NULL,
+            kind TEXT NOT NULL,
             amount REAL NOT NULL,
+            status TEXT NOT NULL,
             note TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TEXT NOT NULL
         )
     """)
 
-    conn.commit()
-    conn.close()
+    con.execute("""
+        CREATE TABLE IF NOT EXISTS jobs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT NOT NULL,
+            reward REAL NOT NULL,
+            status TEXT DEFAULT 'Open'
+        )
+    """)
+
+    con.execute("""
+        CREATE TABLE IF NOT EXISTS applications (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            job_id INTEGER NOT NULL,
+            status TEXT DEFAULT 'Pending',
+            created_at TEXT NOT NULL
+        )
+    """)
+
+    con.execute("""
+        CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            message TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )
+    """)
+
+    # Demo jobs
+    count = con.execute(
+        "SELECT COUNT(*) AS c FROM jobs"
+    ).fetchone()["c"]
+
+    if count == 0:
+        jobs = [
+            (
+                "Data Entry",
+                "Enter and organize provided information.",
+                70
+            ),
+            (
+                "Content Review",
+                "Review short digital content according to instructions.",
+                100
+            ),
+            (
+                "Online Research",
+                "Collect information from approved sources.",
+                150
+            ),
+            (
+                "Customer Support",
+                "Assist customers using provided scripts.",
+                200
+            )
+        ]
+
+        for title, description, reward in jobs:
+            con.execute(
+                """
+                INSERT INTO jobs(title,description,reward)
+                VALUES (?,?,?)
+                """,
+                (title, description, reward)
+            )
+
+    con.commit()
+    con.close()
 
 
 init_db()
 
 
+# -------------------------------------------------
+# CSS
+# -------------------------------------------------
+
 CSS = """
 <style>
-* {
-    box-sizing: border-box;
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f1f4f8;
+    color:#182238;
 }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #101827;
-    color: white;
+.top{
+    background:#10245e;
+    color:#fff;
+    padding:18px;
+    text-align:center;
+    font-size:27px;
+    font-weight:900;
 }
 
-.container {
-    width: min(430px, 92%);
-    margin: 35px auto;
+.badge{
+    display:block;
+    text-align:center;
+    background:#ffdf72;
+    color:#493700;
+    padding:6px;
+    font-size:12px;
+    font-weight:bold;
 }
 
-.card {
-    background: #202c3d;
-    border-radius: 28px;
-    padding: 28px 22px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+.wrap{
+    max-width:760px;
+    margin:auto;
+    padding:16px;
 }
 
-.logo {
-    text-align: center;
-    font-size: 38px;
-    font-weight: 900;
-    margin-bottom: 5px;
+.card{
+    background:#fff;
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:16px;
+    box-shadow:0 4px 18px rgba(0,0,0,.07);
 }
 
-.demo {
-    text-align: center;
-    color: #ffcf40;
-    font-size: 12px;
-    font-weight: bold;
-    letter-spacing: 2px;
-    margin-bottom: 25px;
+.hero{
+    background:linear-gradient(135deg,#10245e,#3567d7);
+    color:#fff;
+    border-radius:20px;
+    padding:28px 20px;
+    text-align:center;
+    margin-bottom:16px;
 }
 
-h1, h2 {
-    text-align: center;
+.hero h1{
+    margin:0 0 8px;
+    font-size:34px;
 }
 
-.subtitle {
-    text-align: center;
-    font-size: 18px;
-    margin-bottom: 25px;
+.balance{
+    background:#172238;
+    color:#fff;
+    text-align:center;
+    border-radius:20px;
+    padding:22px;
+    margin-bottom:16px;
 }
 
-.balance {
-    text-align: center;
-    font-size: 45px;
-    font-weight: bold;
-    color: #20d45b;
-    margin: 12px 0;
+.balance .num{
+    color:#25d66c;
+    font-size:40px;
+    font-weight:900;
+    margin:8px 0;
 }
 
-.label {
-    text-align: center;
-    color: #ddd;
-    margin-bottom: 25px;
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
 }
 
-button, .btn {
-    display: block;
-    width: 100%;
-    padding: 16px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 15px;
-    background: #2864e8;
-    color: white;
-    font-size: 18px;
-    text-align: center;
-    text-decoration: none;
-    cursor: pointer;
+button,.btn{
+    display:block;
+    width:100%;
+    border:0;
+    border-radius:12px;
+    padding:14px;
+    margin:7px 0;
+    background:#2865e8;
+    color:#fff;
+    font-size:16px;
+    text-decoration:none;
+    text-align:center;
+    cursor:pointer;
 }
 
-.btn-red {
-    background: #e9232b;
+.green{background:#159b52}
+.red{background:#df2935}
+.gray{background:#657083}
+
+input,select,textarea{
+    width:100%;
+    padding:14px;
+    border:1px solid #d9dde5;
+    border-radius:10px;
+    margin:7px 0;
+    font-size:16px;
 }
 
-.btn-green {
-    background: #18a957;
+.plan{
+    border:1px solid #e0e4ec;
+    border-radius:18px;
+    padding:18px;
+    margin:14px 0;
 }
 
-input {
-    width: 100%;
-    padding: 16px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
+.plan h3{
+    margin-top:0;
+    color:#12255f;
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+.price{
+    font-size:26px;
+    font-weight:bold;
 }
 
-.info {
-    background: #182334;
-    padding: 15px;
-    border-radius: 15px;
-    margin: 10px 0;
+.stat{
+    background:#f2f5fa;
+    padding:12px;
+    border-radius:10px;
+    margin:8px 0;
 }
 
-.info strong {
-    display: block;
-    font-size: 22px;
-    margin-top: 5px;
+.notice{
+    background:#eef3ff;
+    padding:13px;
+    border-radius:10px;
+    margin:10px 0;
 }
 
-.menu {
-    background: #f7f8fa;
-    color: #222;
-    padding: 15px;
-    border-radius: 15px;
-    margin: 10px 0;
-    text-decoration: none;
-    display: block;
-    font-size: 17px;
+.error{
+    background:#ffe4e4;
+    color:#8c1111;
 }
 
-.small {
-    text-align: center;
-    color: #aaa;
-    font-size: 13px;
-    margin-top: 20px;
+.success{
+    background:#e1f8ea;
+    color:#126b36;
 }
 
-.alert {
-    background: #5b2020;
-    padding: 12px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    text-align: center;
+.job{
+    border:1px solid #e0e4ec;
+    padding:17px;
+    border-radius:15px;
+    margin:12px 0;
 }
 
-.plan {
-    background: #182334;
-    border-radius: 20px;
-    padding: 18px;
-    margin: 15px 0;
+.menu{
+    display:block;
+    background:#fff;
+    padding:16px;
+    margin:8px 0;
+    border-radius:12px;
+    color:#182238;
+    text-decoration:none;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
 }
 
-.plan h3 {
-    margin-top: 0;
+.small{
+    color:#777;
+    font-size:13px;
 }
 
-.amount {
-    font-size: 25px;
-    font-weight: bold;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-td {
-    padding: 10px 4px;
-    border-bottom: 1px solid #394456;
-    font-size: 13px;
-}
+.center{text-align:center}
 </style>
 """
 
 
-def page(content):
+def page(content, title="NEXA"):
     return f"""
-    <!DOCTYPE html>
+    <!doctype html>
     <html>
     <head>
+        <meta charset="utf-8">
         <meta name="viewport"
-              content="width=device-width, initial-scale=1">
-        <title>Nexa Demo</title>
+              content="width=device-width,initial-scale=1">
+        <title>{title}</title>
+        {CSS}
     </head>
     <body>
-        {CSS}
-        <div class="container">
+        <div class="top">NEXA</div>
+        <div class="badge">JOBS & SERVICES PLATFORM</div>
+        <div class="wrap">
             {content}
         </div>
     </body>
@@ -236,326 +390,339 @@ def page(content):
     """
 
 
+def user():
+    uid = session.get("user_id")
+
+    if not uid:
+        return None
+
+    con = db()
+    u = con.execute(
+        "SELECT * FROM users WHERE id=?",
+        (uid,)
+    ).fetchone()
+    con.close()
+
+    return u
+
+
+# -------------------------------------------------
+# HOME
+# -------------------------------------------------
+
 @app.route("/")
 def home():
+
     return page("""
+    <div class="hero">
+        <h1>NEXA</h1>
+        <p>Jobs • Tasks • Earnings • Wallet</p>
+    </div>
+
     <div class="card">
-        <div class="logo">NEXA</div>
-        <div class="demo">DEMO WALLET • TEST MODE</div>
+        <h2>Find Work & Complete Tasks</h2>
+        <p>
+            Create an account, find available work,
+            complete tasks and track your earnings.
+        </p>
 
-        <h1>💰 Nexa</h1>
+        <a class="btn" href="/register">Create Account</a>
+        <a class="btn gray" href="/login">Login</a>
+    </div>
 
-        <div class="subtitle">
-            Deposit • Balance • Withdraw
-        </div>
+    <div class="card">
+        <h2>Work Packages</h2>
 
-        <a class="btn" href="/register">Register</a>
-        <a class="btn" href="/login">Login</a>
-
-        <div class="small">
-            This is a demonstration website.
-        </div>
+        <p class="small">
+            Packages describe task/work access and
+            are not investment products.
+        </p>
     </div>
     """)
 
+# -------------------------------------------------
+# REGISTER
+# -------------------------------------------------
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register", methods=["GET","POST"])
 def register():
 
     error = ""
 
     if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        password = request.form.get("password", "")
-        confirm = request.form.get("confirm", "")
+
+        username = request.form.get("username","").strip()
+        password = request.form.get("password","")
+        confirm = request.form.get("confirm","")
 
         if not username or not password:
-            error = "Please fill all fields."
+            error = "Fill all fields."
 
         elif password != confirm:
             error = "Passwords do not match."
 
         else:
-            conn = get_db()
+            con = db()
 
             try:
-                conn.execute(
-                    "INSERT INTO users(username,password) VALUES (?,?)",
-                    (username, generate_password_hash(password))
+                con.execute(
+                    """
+                    INSERT INTO users
+                    (username,password,created_at)
+                    VALUES (?,?,?)
+                    """,
+                    (
+                        username,
+                        generate_password_hash(password),
+                        datetime.now().isoformat()
+                    )
                 )
-                conn.commit()
-                conn.close()
+
+                con.commit()
+                con.close()
 
                 return redirect("/login")
 
             except sqlite3.IntegrityError:
-                conn.close()
+                con.close()
                 error = "Username already exists."
 
     return page(f"""
     <div class="card">
-        <div class="logo">NEXA</div>
-        <div class="demo">DEMO / TEST MODE</div>
+        <h2>Create NEXA Account</h2>
 
-        <h2>Create Account</h2>
-
-        {"<div class='alert'>" + error + "</div>" if error else ""}
+        {"<div class='notice error'>"+error+"</div>" if error else ""}
 
         <form method="post">
 
-            <input
-                name="username"
-                placeholder="Username"
-                required
-            >
+            <input name="username"
+                   placeholder="Username"
+                   required>
 
-            <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                required
-            >
+            <input type="password"
+                   name="password"
+                   placeholder="Password"
+                   required>
 
-            <input
-                type="password"
-                name="confirm"
-                placeholder="Confirm password"
-                required
-            >
+            <input type="password"
+                   name="confirm"
+                   placeholder="Confirm password"
+                   required>
 
-            <button type="submit">
-                Register
-            </button>
+            <button>Register</button>
         </form>
 
-        <a class="btn" href="/login">Already have an account?</a>
+        <a class="btn gray" href="/login">Login</a>
     </div>
     """)
 
 
-@app.route("/login", methods=["GET", "POST"])
+# -------------------------------------------------
+# LOGIN
+# -------------------------------------------------
+
+@app.route("/login", methods=["GET","POST"])
 def login():
 
     error = ""
 
     if request.method == "POST":
 
-        username = request.form.get("username", "").strip()
-        password = request.form.get("password", "")
+        username = request.form.get("username","")
+        password = request.form.get("password","")
 
-        conn = get_db()
+        con = db()
 
-        user = conn.execute(
+        u = con.execute(
             "SELECT * FROM users WHERE username=?",
             (username,)
         ).fetchone()
 
-        conn.close()
+        con.close()
 
-        if user and check_password_hash(user["password"], password):
-
-            session["user_id"] = user["id"]
-
+        if u and check_password_hash(
+            u["password"], password
+        ):
+            session["user_id"] = u["id"]
             return redirect("/dashboard")
 
-        error = "Invalid username or password."
+        error = "Invalid login details."
 
     return page(f"""
     <div class="card">
-        <div class="logo">NEXA</div>
-        <div class="demo">DEMO / TEST MODE</div>
-
         <h2>Login</h2>
 
-        {"<div class='alert'>" + error + "</div>" if error else ""}
+        {"<div class='notice error'>"+error+"</div>" if error else ""}
 
         <form method="post">
 
-            <input
-                name="username"
-                placeholder="Username"
-                required
-            >
+            <input name="username"
+                   placeholder="Username"
+                   required>
 
-            <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                required
-            >
+            <input type="password"
+                   name="password"
+                   placeholder="Password"
+                   required>
 
-            <button type="submit">
-                Login
-            </button>
-
+            <button>Login</button>
         </form>
 
-        <a class="btn" href="/register">Create account</a>
+        <a class="btn gray" href="/register">
+            Register
+        </a>
     </div>
     """)
 
 
-def current_user():
-
-    if "user_id" not in session:
-        return None
-
-    conn = get_db()
-
-    user = conn.execute(
-        "SELECT * FROM users WHERE id=?",
-        (session["user_id"],)
-    ).fetchone()
-
-    conn.close()
-
-    return user
-
+# -------------------------------------------------
+# DASHBOARD
+# -------------------------------------------------
 
 @app.route("/dashboard")
 def dashboard():
 
-    user = current_user()
+    u = user()
 
-    if not user:
+    if not u:
         return redirect("/login")
 
+    plans_html = ""
+
+    for p in PLANS:
+
+        plans_html += f"""
+        <div class="plan">
+
+            <h3>{p["name"]}</h3>
+
+            <div class="price">
+                {p["price"]:,} ETB
+            </div>
+
+            <p>{p["description"]}</p>
+
+            <div class="stat">
+                Daily task target:
+                <b>{p["daily"]:,} ETB</b>
+            </div>
+
+            <div class="stat">
+                Duration:
+                <b>{p["days"]} days</b>
+            </div>
+
+            <div class="stat">
+                Maximum task value:
+                <b>{p["total"]:,} ETB</b>
+            </div>
+
+            <a class="btn"
+               href="/plans/{p['name'].replace(' ','-')}">
+               View Plan
+            </a>
+
+        </div>
+        """
+
     return page(f"""
-    <div class="card">
+    <div class="balance">
 
-        <div class="logo">NEXA</div>
-        <div class="demo">DEMO / TEST MODE</div>
+        <div>Available Wallet Balance</div>
 
-        <h1>Dashboard</h1>
-
-        <div class="subtitle">
-            Welcome, <strong>{user["username"]}</strong>
+        <div class="num">
+            {u["balance"]:,.2f} ETB
         </div>
 
-        <div class="balance">
-            {user["balance"]:,.2f} ETB
+        <div>
+            Total earned:
+            {u["total_earned"]:,.2f} ETB
         </div>
-
-        <div class="label">
-            Current Balance
-        </div>
-
-        <div class="grid">
-
-            <a class="btn" href="/deposit">
-                💵 Deposit
-            </a>
-
-            <a class="btn" href="/withdraw">
-                💸 Withdraw
-            </a>
-
-            <a class="btn" href="/history">
-                📊 History
-            </a>
-
-            <a class="btn" href="/my">
-                👤 My
-            </a>
-
-        </div>
-
-        <a class="btn btn-red" href="/logout">
-            Logout
-        </a>
 
     </div>
+
+    <div class="grid">
+
+        <a class="btn" href="/jobs">💼 Jobs</a>
+        <a class="btn" href="/wallet">💰 Wallet</a>
+        <a class="btn" href="/withdraw">💸 Withdraw</a>
+        <a class="btn" href="/my">👤 My</a>
+
+    </div>
+
+    <div class="card">
+        <h2>Plans</h2>
+        <p class="small">
+            Work/task packages
+        </p>
+
+        {plans_html}
+    </div>
+
+    <a class="btn red" href="/logout">Logout</a>
     """)
 
 
-@app.route("/deposit", methods=["GET", "POST"])
-def deposit():
+# -------------------------------------------------
+# PLAN DETAILS
+# -------------------------------------------------
 
-    user = current_user()
+@app.route("/plans/<plan_name>")
+def plan_details(plan_name):
 
-    if not user:
+    u = user()
+
+    if not u:
         return redirect("/login")
 
-    message = ""
+    selected = None
 
-    if request.method == "POST":
+    for p in PLANS:
+        if p["name"].replace(" ","-") == plan_name:
+            selected = p
+            break
 
-        try:
-            amount = float(request.form.get("amount", 0))
-        except ValueError:
-            amount = 0
-
-        # Demo limit
-        if amount < 1:
-            message = "Enter a valid demo amount."
-
-        elif amount > 50000:
-            message = "Maximum demo deposit is 50,000 ETB."
-
-        else:
-            conn = get_db()
-
-            conn.execute(
-                """
-                UPDATE users
-                SET balance = balance + ?
-                WHERE id=?
-                """,
-                (amount, user["id"])
-            )
-
-            conn.execute(
-                """
-                INSERT INTO transactions
-                (user_id,type,amount,note)
-                VALUES (?,?,?,?)
-                """,
-                (
-                    user["id"],
-                    "DEPOSIT",
-                    amount,
-                    "Demo transaction"
-                )
-            )
-
-            conn.commit()
-            conn.close()
-
-            return redirect("/dashboard")
+    if not selected:
+        return redirect("/dashboard")
 
     return page(f"""
     <div class="card">
 
-        <div class="logo">NEXA</div>
-        <div class="demo">DEMO DEPOSIT</div>
+        <h2>{selected["name"]}</h2>
 
-        <h2>Deposit</h2>
-
-        {"<div class='alert'>" + message + "</div>" if message else ""}
+        <div class="price">
+            {selected["price"]:,} ETB
+        </div>
 
         <p>
-            Demo only. No real money is transferred.
+            {selected["description"]}
         </p>
 
-        <form method="post">
+        <div class="stat">
+            Daily task target:
+            <b>{selected["daily"]:,} ETB</b>
+        </div>
 
-            <input
-                type="number"
-                name="amount"
-                min="1"
-                max="50000"
-                step="0.01"
-                placeholder="Amount in ETB"
-                required
-            >
+        <div class="stat">
+            Duration:
+            <b>{selected["days"]} days</b>
+        </div>
 
-            <button type="submit">
-                Add Demo Balance
-            </button>
+        <div class="stat">
+            Maximum task value:
+            <b>{selected["total"]:,} ETB</b>
+        </div>
 
-        </form>
+        <div class="notice">
+            Earnings depend on completed and approved work.
+            They are not guaranteed investment returns.
+        </div>
 
-        <a class="btn" href="/dashboard">
+        <a class="btn" href="/jobs">
+            Find Jobs
+        </a>
+
+        <a class="btn gray" href="/dashboard">
             Back
         </a>
 
@@ -563,12 +730,168 @@ def deposit():
     """)
 
 
-@app.route("/withdraw", methods=["GET", "POST"])
+# -------------------------------------------------
+# JOBS
+# -------------------------------------------------
+
+@app.route("/jobs")
+def jobs():
+
+    u = user()
+
+    if not u:
+        return redirect("/login")
+
+    con = db()
+
+    jobs = con.execute(
+        "SELECT * FROM jobs ORDER BY id DESC"
+    ).fetchall()
+
+    con.close()
+
+    html = ""
+
+    for j in jobs:
+
+        html += f"""
+        <div class="job">
+
+            <h3>{j["title"]}</h3>
+
+            <p>{j["description"]}</p>
+
+            <div class="stat">
+                Task value:
+                <b>{j["reward"]:,.2f} ETB</b>
+            </div>
+
+            <a class="btn"
+               href="/apply/{j['id']}">
+               Apply
+            </a>
+
+        </div>
+        """
+
+    return page(f"""
+    <div class="card">
+        <h2>💼 Available Jobs</h2>
+        {html}
+        <a class="btn gray" href="/dashboard">Back</a>
+    </div>
+    """)
+
+
+# -------------------------------------------------
+# APPLY
+# -------------------------------------------------
+
+@app.route("/apply/<int:job_id>")
+def apply(job_id):
+
+    u = user()
+
+    if not u:
+        return redirect("/login")
+
+    con = db()
+
+    job = con.execute(
+        "SELECT * FROM jobs WHERE id=?",
+        (job_id,)
+    ).fetchone()
+
+    if job:
+
+        con.execute(
+            """
+            INSERT INTO applications
+            (user_id,job_id,created_at)
+            VALUES (?,?,?)
+            """,
+            (
+                u["id"],
+                job_id,
+                datetime.now().isoformat()
+            )
+        )
+
+        con.execute(
+            """
+            INSERT INTO messages
+            (user_id,message,created_at)
+            VALUES (?,?,?)
+            """,
+            (
+                u["id"],
+                "Your job application is pending review.",
+                datetime.now().isoformat()
+            )
+        )
+
+        con.commit()
+
+    con.close()
+
+    return redirect("/jobs")
+
+
+# -------------------------------------------------
+# WALLET
+# -------------------------------------------------
+
+@app.route("/wallet")
+def wallet():
+
+    u = user()
+
+    if not u:
+        return redirect("/login")
+
+    return page(f"""
+    <div class="card">
+
+        <h2>💰 Wallet</h2>
+
+        <div class="balance">
+            <div>Balance</div>
+            <div class="num">
+                {u["balance"]:,.2f} ETB
+            </div>
+        </div>
+
+        <div class="stat">
+            Total earned:
+            <b>{u["total_earned"]:,.2f} ETB</b>
+        </div>
+
+        <a class="btn" href="/transactions">
+            Transaction History
+        </a>
+
+        <a class="btn green" href="/withdraw">
+            Withdraw
+        </a>
+
+        <a class="btn gray" href="/dashboard">
+            Back
+        </a>
+
+    </div>
+    """)
+
+
+# -------------------------------------------------
+# WITHDRAW
+# -------------------------------------------------
+
+@app.route("/withdraw", methods=["GET","POST"])
 def withdraw():
 
-    user = current_user()
+    u = user()
 
-    if not user:
+    if not u:
         return redirect("/login")
 
     message = ""
@@ -576,69 +899,73 @@ def withdraw():
     if request.method == "POST":
 
         try:
-            amount = float(request.form.get("amount", 0))
+            amount = float(
+                request.form.get("amount",0)
+            )
         except ValueError:
             amount = 0
 
-        if amount < 200:
-            message = "Minimum demo withdrawal is 200 ETB."
+        bank = request.form.get("bank","").strip()
+        account = request.form.get("account","").strip()
 
-        elif amount > user["balance"]:
-            message = "Insufficient demo balance."
+        if amount < 200:
+            message = "Minimum withdrawal amount is 200 ETB."
+
+        elif amount > u["balance"]:
+            message = "Insufficient available balance."
+
+        elif not bank or not account:
+            message = "Enter bank and account details."
 
         else:
-            conn = get_db()
 
-            conn.execute(
+            con = db()
+
+            con.execute(
                 """
                 UPDATE users
-                SET balance = balance - ?
+                SET balance=balance-?
                 WHERE id=?
                 """,
-                (amount, user["id"])
+                (amount,u["id"])
             )
 
-            conn.execute(
+            con.execute(
                 """
                 INSERT INTO transactions
-                (user_id,type,amount,note)
-                VALUES (?,?,?,?)
+                (user_id,kind,amount,status,note,created_at)
+                VALUES (?,?,?,?,?,?)
                 """,
                 (
-                    user["id"],
-                    "WITHDRAWAL",
+                    u["id"],
+                    "Withdrawal",
                     amount,
-                    "Demo withdrawal request"
+                    "Pending",
+                    f"{bank} / {account}",
+                    datetime.now().isoformat()
                 )
             )
 
-            conn.commit()
-            conn.close()
+            con.commit()
+            con.close()
 
-            return redirect("/history")
+            message = (
+                "Withdrawal request submitted. "
+                "It is pending review."
+            )
 
     return page(f"""
     <div class="card">
 
-        <div class="logo">NEXA</div>
-        <div class="demo">DEMO WITHDRAWAL</div>
+        <h2>💸 Withdraw</h2>
 
-        <h2>Withdraw</h2>
-
-        <div class="info">
-            Available demo balance
-            <strong>{user["balance"]:,.2f} ETB</strong>
+        <div class="notice">
+            Minimum withdrawal amount:
+            <b>200 ETB</b>
         </div>
 
-        {"<div class='alert'>" + message + "</div>" if message else ""}
-
-        <p>
-            Minimum withdrawal: <strong>200 ETB</strong>
-        </p>
-
-        <p>
-            This is a simulated demo request.
-        </p>
+        {"<div class='notice success'>"+message+"</div>"
+         if message else ""}
 
         <form method="post">
 
@@ -647,17 +974,34 @@ def withdraw():
                 name="amount"
                 min="200"
                 step="0.01"
-                placeholder="Amount in ETB"
+                placeholder="Withdrawal amount"
                 required
             >
 
-            <button type="submit">
-                Submit Demo Request
+            <input
+                name="bank"
+                placeholder="Bank name"
+                required
+            >
+
+            <input
+                name="account"
+                placeholder="Account number / wallet"
+                required
+            >
+
+            <button class="green">
+                Submit Withdrawal
             </button>
 
         </form>
 
-        <a class="btn" href="/dashboard">
+        <p class="small">
+            Requests are reviewed according to the platform's
+            payment policy.
+        </p>
+
+        <a class="btn gray" href="/wallet">
             Back
         </a>
 
@@ -665,237 +1009,191 @@ def withdraw():
     """)
 
 
-@app.route("/history")
-def history():
+# -------------------------------------------------
+# TRANSACTIONS
+# -------------------------------------------------
 
-    user = current_user()
+@app.route("/transactions")
+def transactions():
 
-    if not user:
+    u = user()
+
+    if not u:
         return redirect("/login")
 
-    conn = get_db()
+    con = db()
 
-    rows = conn.execute(
+    rows = con.execute(
         """
         SELECT * FROM transactions
         WHERE user_id=?
         ORDER BY id DESC
         """,
-        (user["id"],)
+        (u["id"],)
     ).fetchall()
 
-    conn.close()
+    con.close()
 
-    table = ""
+    html = ""
 
-    if rows:
+    for r in rows:
 
-        table = "<table>"
+        html += f"""
+        <div class="job">
+            <b>{r["kind"]}</b><br>
+            Amount:
+            {r["amount"]:,.2f} ETB<br>
+            Status:
+            <b>{r["status"]}</b><br>
+            <span class="small">
+                {r["created_at"]}
+            </span>
+        </div>
+        """
 
-        for row in rows:
-
-            table += f"""
-            <tr>
-                <td>
-                    <strong>{row["type"]}</strong><br>
-                    {row["note"] or ""}
-                </td>
-
-                <td>
-                    {row["amount"]:,.2f} ETB
-                </td>
-            </tr>
-            """
-
-        table += "</table>"
-
-    else:
-        table = "<p>No transactions yet.</p>"
+    if not html:
+        html = "<p>No transactions yet.</p>"
 
     return page(f"""
     <div class="card">
+        <h2>📊 Transactions</h2>
 
-        <div class="logo">NEXA</div>
-        <div class="demo">DEMO HISTORY</div>
+        {html}
 
-        <h2>Transaction History</h2>
-
-        {table}
-
-        <a class="btn" href="/dashboard">
-            Back to Dashboard
+        <a class="btn gray" href="/wallet">
+            Back
         </a>
-
     </div>
     """)
 
 
+# -------------------------------------------------
+# MY
+# -------------------------------------------------
+
 @app.route("/my")
 def my():
 
-    user = current_user()
+    u = user()
 
-    if not user:
+    if not u:
         return redirect("/login")
 
     return page(f"""
     <div class="card">
 
-        <div class="logo">NEXA</div>
-        <div class="demo">DEMO / TEST MODE</div>
+        <h2>👤 My Account</h2>
 
-        <div class="grid">
+        <div class="stat">
+            Username:
+            <b>{u["username"]}</b>
+        </div>
 
-            <div class="info">
-                Balance
-                <strong>
-                    {user["balance"]:,.2f}
-                </strong>
-            </div>
+        <div class="stat">
+            Balance:
+            <b>{u["balance"]:,.2f} ETB</b>
+        </div>
 
-            <div class="info">
-                Total income
-                <strong>
-                    {user["total_income"]:,.2f}
-                </strong>
-            </div>
-
+        <div class="stat">
+            Total earned:
+            <b>{u["total_earned"]:,.2f} ETB</b>
         </div>
 
         <a class="menu" href="/messages">
             💬 Messages
         </a>
 
-        <a class="menu" href="/personal">
-            👤 Personal information
+        <a class="menu" href="/jobs">
+            💼 My Jobs
         </a>
 
-        <a class="menu" href="/income">
-            📅 Income details
-        </a>
-
-        <a class="menu" href="/deposit">
-            💳 Recharge details
+        <a class="menu" href="/transactions">
+            📊 Income / Transaction Details
         </a>
 
         <a class="menu" href="/withdraw">
-            💸 Withdrawal details
+            💸 Withdrawal Details
         </a>
 
         <a class="menu" href="/about">
-            📖 About us
+            ℹ️ About NEXA
         </a>
 
-        <a class="menu" href="/download">
-            ⬇️ Download
-        </a>
-
-        <a class="menu" href="/language">
-            🌐 Language
-        </a>
-
-        <a class="menu" href="/logout">
-            🚪 Log out
-        </a>
-
-        <a class="btn" href="/dashboard">
+        <a class="btn gray" href="/dashboard">
             Dashboard
+        </a>
+
+        <a class="btn red" href="/logout">
+            Logout
         </a>
 
     </div>
     """)
 
+
+# -------------------------------------------------
+# MESSAGES
+# -------------------------------------------------
 
 @app.route("/messages")
 def messages():
 
-    if not current_user():
+    u = user()
+
+    if not u:
         return redirect("/login")
 
-    return page("""
-    <div class="card">
-        <div class="logo">NEXA</div>
-        <div class="demo">MESSAGES</div>
+    con = db()
 
-        <h2>Messages</h2>
+    rows = con.execute(
+        """
+        SELECT * FROM messages
+        WHERE user_id=?
+        ORDER BY id DESC
+        """,
+        (u["id"],)
+    ).fetchall()
 
-        <div class="info">
-            Welcome to Nexa Demo.
+    con.close()
+
+    html = ""
+
+    for r in rows:
+        html += f"""
+        <div class="notice">
+            {r["message"]}
+            <br>
+            <span class="small">
+                {r["created_at"]}
+            </span>
         </div>
+        """
 
-        <div class="info">
-            This website is running in test mode.
+    if not html:
+        html = """
+        <div class="notice">
+            No messages yet.
         </div>
-
-        <a class="btn" href="/my">Back</a>
-    </div>
-    """)
-
-
-@app.route("/personal")
-def personal():
-
-    user = current_user()
-
-    if not user:
-        return redirect("/login")
+        """
 
     return page(f"""
     <div class="card">
 
-        <div class="logo">NEXA</div>
-        <div class="demo">PERSONAL INFORMATION</div>
+        <h2>💬 Messages</h2>
 
-        <h2>Personal Information</h2>
+        {html}
 
-        <div class="info">
-            Username
-            <strong>{user["username"]}</strong>
-        </div>
-
-        <div class="info">
-            Account type
-            <strong>Demo</strong>
-        </div>
-
-        <a class="btn" href="/my">Back</a>
+        <a class="btn gray" href="/my">
+            Back
+        </a>
 
     </div>
     """)
 
 
-@app.route("/income")
-def income():
-
-    user = current_user()
-
-    if not user:
-        return redirect("/login")
-
-    return page(f"""
-    <div class="card">
-
-        <div class="logo">NEXA</div>
-        <div class="demo">INCOME DETAILS</div>
-
-        <h2>Income Details</h2>
-
-        <div class="info">
-            Total demo income
-            <strong>
-                {user["total_income"]:,.2f} ETB
-            </strong>
-        </div>
-
-        <p>
-            Income figures on this demo are not real earnings.
-        </p>
-
-        <a class="btn" href="/my">Back</a>
-
-    </div>
-    """)
-
+# -------------------------------------------------
+# ABOUT
+# -------------------------------------------------
 
 @app.route("/about")
 def about():
@@ -903,67 +1201,29 @@ def about():
     return page("""
     <div class="card">
 
-        <div class="logo">NEXA</div>
-        <div class="demo">DEMO WEBSITE</div>
-
-        <h2>About Nexa</h2>
+        <h2>About NEXA</h2>
 
         <p>
-            Nexa is a demonstration wallet interface
-            created for testing website flows.
+            NEXA is a jobs and digital services platform
+            designed to connect users with work opportunities.
         </p>
 
         <p>
-            It does not process real payments or real
-            withdrawals.
+            Earnings are connected to completed and approved
+            work or services.
         </p>
 
-        <a class="btn" href="/my">Back</a>
+        <a class="btn gray" href="/my">
+            Back
+        </a>
 
     </div>
     """)
 
 
-@app.route("/download")
-def download():
-
-    return page("""
-    <div class="card">
-
-        <div class="logo">NEXA</div>
-        <div class="demo">DEMO</div>
-
-        <h2>Download</h2>
-
-        <p>
-            App download is not available in this demo.
-        </p>
-
-        <a class="btn" href="/my">Back</a>
-
-    </div>
-    """)
-
-
-@app.route("/language")
-def language():
-
-    return page("""
-    <div class="card">
-
-        <div class="logo">NEXA</div>
-        <div class="demo">LANGUAGE</div>
-
-        <h2>Language</h2>
-
-        <button>English</button>
-        <button>አማርኛ</button>
-
-        <a class="btn" href="/my">Back</a>
-
-    </div>
-    """)
-
+# -------------------------------------------------
+# LOGOUT
+# -------------------------------------------------
 
 @app.route("/logout")
 def logout():
@@ -973,8 +1233,14 @@ def logout():
     return redirect("/")
 
 
+# -------------------------------------------------
+# RUN
+# -------------------------------------------------
+
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+
     app.run(
         host="0.0.0.0",
-        port=10000
+        port=port
     )
