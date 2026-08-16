@@ -17,6 +17,11 @@ CUSTOMER_SERVICE_URL = os.environ.get("CUSTOMER_SERVICE_URL", "")
 ADMIN_KEY = os.environ.get("ADMIN_KEY", "")
 WITHDRAWAL_FEE = 0.10
 
+MIN_WITHDRAWAL = 200
+WITHDRAWAL_FEE = 0.10
+WITHDRAWAL_START_HOUR = 9
+WITHDRAWAL_END_HOUR = 17
+
 PLANS = [
     {"id": "A", "name": "Plan A", "price": 500, "daily_reward": 100},
     {"id": "B", "name": "Plan B", "price": 1000, "daily_reward": 200},
@@ -61,6 +66,17 @@ def init_db():
         created_at TEXT NOT NULL,
         reviewed_at TEXT,
         UNIQUE(user_id, reference),
+        FOREIGN KEY(user_id) REFERENCES users(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS bank_accounts(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER UNIQUE NOT NULL,
+        bank_name TEXT NOT NULL,
+        account_name TEXT NOT NULL,
+        account_number TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
         FOREIGN KEY(user_id) REFERENCES users(id)
     );
 
@@ -144,9 +160,22 @@ def render_home(user=None, referral_link=None):
         ).fetchall()
     conn.close()
 
+    bank_account = None
+    if user:
+        c2 = db()
+        bank_account = c2.execute(
+            "SELECT * FROM bank_accounts WHERE user_id=?", (user["id"],)
+        ).fetchone()
+        c2.close()
+
     return render_template(
         "index.html",
         user=user,
+        bank_account=bank_account,
+        min_withdrawal=MIN_WITHDRAWAL,
+        withdrawal_start="9:00 AM",
+        withdrawal_end="5:00 PM",
+        withdrawal_processing="within 24 hours",
         plans=PLANS,
         deposits=deposits,
         withdrawals=withdrawals,
@@ -364,30 +393,74 @@ def complete_task(task_id):
     return redirect(url_for("home"))
 
 
+@app.route("/bind-bank", methods=["POST"])
+def bind_bank():
+    user = current_user()
+    if not user:
+        return redirect(url_for("login"))
+
+    bank_name = request.form.get("bank_name", "").strip()
+    account_name = request.form.get("account_name", "").strip()
+    account_number = request.form.get("account_number", "").strip()
+
+    if not bank_name or not account_name or not account_number:
+        flash("Please enter bank name, account holder name and account number.", "error")
+        return redirect(url_for("home"))
+
+    conn = db()
+    try:
+        conn.execute(
+            """INSERT INTO bank_accounts
+               (user_id,bank_name,account_name,account_number,created_at,updated_at)
+               VALUES(?,?,?,?,?,?)
+               ON CONFLICT(user_id) DO UPDATE SET
+                 bank_name=excluded.bank_name,
+                 account_name=excluded.account_name,
+                 account_number=excluded.account_number,
+                 updated_at=excluded.updated_at""",
+            (user["id"], bank_name, account_name, account_number, now(), now()),
+        )
+        conn.commit()
+        flash("Bank account saved successfully.", "success")
+    finally:
+        conn.close()
+    return redirect(url_for("home"))
+
+
 @app.route("/withdraw", methods=["POST"])
 def withdraw():
     user = current_user()
     if not user:
         return redirect(url_for("login"))
 
+    from datetime import datetime as _dt
+    hour = _dt.now().hour
+    if hour < WITHDRAWAL_START_HOUR or hour >= WITHDRAWAL_END_HOUR:
+        flash("Withdrawals are available only from 9:00 AM to 5:00 PM.", "error")
+        return redirect(url_for("home"))
+
     try:
         amount = float(request.form.get("amount", "0"))
     except ValueError:
         amount = 0
 
-    account_number = request.form.get("account_number", "").strip()
-    account_name = request.form.get("account_name", "").strip()
-
-    if amount <= 0 or not account_number or not account_name:
-        flash("Enter a valid amount, account number and account name.", "error")
+    if amount < MIN_WITHDRAWAL:
+        flash(f"Minimum withdrawal amount is {MIN_WITHDRAWAL} ETB.", "error")
         return redirect(url_for("home"))
-
-    fee = round(amount * WITHDRAWAL_FEE, 2)
-    net = round(amount - fee, 2)
 
     conn = db()
     try:
-        # Reserve the withdrawal amount while it is PENDING.
+        bank = conn.execute(
+            "SELECT * FROM bank_accounts WHERE user_id=?", (user["id"],)
+        ).fetchone()
+
+        if not bank:
+            flash("Please bind your bank account before requesting a withdrawal.", "error")
+            return redirect(url_for("home"))
+
+        fee = round(amount * WITHDRAWAL_FEE, 2)
+        net = round(amount - fee, 2)
+
         cur = conn.execute(
             """UPDATE users
                SET balance=balance-?
@@ -405,15 +478,16 @@ def withdraw():
                VALUES(?,?,?,?,?,?,?,?)""",
             (
                 user["id"], amount, fee, net,
-                account_number, account_name, "PENDING", now()
+                bank["account_number"], bank["account_name"],
+                "PENDING", now()
             ),
         )
         add_history(
             conn, user["id"], "WITHDRAWAL_REQUESTED", amount,
-            f"Fee: {fee:.2f} ETB; Net: {net:.2f} ETB"
+            f"{bank['bank_name']} / {bank['account_number']} · Fee: {fee:.2f} ETB · Net: {net:.2f} ETB"
         )
         conn.commit()
-        flash("Withdrawal submitted. Status: PENDING. Admin must review it.", "success")
+        flash("Withdrawal submitted. It will be reviewed within 24 hours.", "success")
     finally:
         conn.close()
 
