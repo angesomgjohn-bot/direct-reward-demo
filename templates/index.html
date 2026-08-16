@@ -80,6 +80,7 @@ small{color:#687386}
 
 <div class="grid">
   <a class="btn" href="#plans">💼 Plans</a>
+  <a class="btn dark" href="#bank">🏦 Bank</a>
   <a class="btn green" href="#deposit">💰 Deposit</a>
   <a class="btn" href="#tasks">📋 Tasks</a>
   <a class="btn dark" href="#referral">👥 Invite</a>
@@ -142,15 +143,44 @@ small{color:#687386}
   {% endif %}
 </div>
 
+<div class="card" id="bank">
+  <h2>🏦 Bind Bank Account</h2>
+  <p class="muted">Save the bank account that will be used for your withdrawals.</p>
+  {% if bank_account %}
+  <div class="notice success">
+    <b>{{ bank_account["bank_name"] }}</b><br>
+    {{ bank_account["account_name"] }} · {{ bank_account["account_number"] }}
+  </div>
+  {% endif %}
+  <form method="post" action="/bind-bank">
+    <input name="bank_name" value="{{ bank_account['bank_name'] if bank_account else '' }}" placeholder="Bank name" required>
+    <input name="account_name" value="{{ bank_account['account_name'] if bank_account else '' }}" placeholder="Account holder name" required>
+    <input name="account_number" value="{{ bank_account['account_number'] if bank_account else '' }}" placeholder="Account number" required>
+    <button class="dark" type="submit">Save / Update Bank Account</button>
+  </form>
+</div>
+
 <div class="card" id="withdraw">
   <h2>💵 Withdraw</h2>
-  <p>Withdrawal requests are reserved from your available balance and remain <b>PENDING</b> until admin review.</p>
+  <div class="notice">
+    <b>Minimum:</b> {{ min_withdrawal }} ETB<br>
+    <b>Fee:</b> {{ withdrawal_fee_percent }}%<br>
+    <b>Withdrawal time:</b> {{ withdrawal_start }} – {{ withdrawal_end }}<br>
+    <b>Processing:</b> {{ withdrawal_processing }}
+  </div>
+  <p>Withdrawals are sent to your bound bank account after admin verification. Requests outside the withdrawal hours are not accepted.</p>
+  {% if bank_account %}
   <form method="post" action="/withdraw">
-    <input name="amount" type="number" min="1" step="0.01" placeholder="Withdrawal amount (ETB)" required>
-    <input name="account_number" placeholder="Receiving account number" required>
-    <input name="account_name" placeholder="Receiving account name" required>
+    <input name="amount" id="withdrawAmount" type="number" min="{{ min_withdrawal }}" step="0.01" placeholder="Withdrawal amount (ETB)" required>
+    <div class="task">
+      <div class="row"><span>Fee (10%)</span><b id="feePreview">0.00 ETB</b></div>
+      <div class="row"><span>You'll receive</span><b id="netPreview">0.00 ETB</b></div>
+    </div>
     <button class="green" type="submit">Request Withdrawal</button>
   </form>
+  {% else %}
+  <div class="notice">Bind your bank account above before requesting a withdrawal.</div>
+  {% endif %}
 </div>
 
 <div class="card" id="referral">
@@ -223,5 +253,14 @@ small{color:#687386}
   <a href="#referral">👤<br>My</a>
 </div>
 {% endif %}
+<script>
+const wa=document.getElementById('withdrawAmount');
+if(wa){
+  const fee=document.getElementById('feePreview');
+  const net=document.getElementById('netPreview');
+  const update=()=>{const a=parseFloat(wa.value)||0; fee.textContent=(a*.10).toFixed(2)+' ETB'; net.textContent=(a-a*.10).toFixed(2)+' ETB';};
+  wa.addEventListener('input',update); update();
+}
+</script>
 </body>
-    </html>
+      </html>
