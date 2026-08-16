@@ -7,56 +7,54 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f1f4f9;color:#18233d}
-.top{background:#142c69;color:#fff;text-align:center;padding:20px 10px 10px}
-.logo{font-size:38px;font-weight:900}
-.subtitle{background:#ffd95c;color:#17213a;padding:10px;margin:10px -10px -10px;font-weight:800}
-.container{max-width:700px;margin:auto;padding:20px 16px 100px}
-.card{background:#fff;border-radius:28px;padding:24px;margin-bottom:18px;box-shadow:0 5px 18px rgba(0,0,0,.08)}
+.top{background:#142c69;color:#fff;text-align:center;padding:18px 10px 0}
+.logo{font-size:40px;font-weight:900}
+.subtitle{background:#ffd95c;color:#17213a;padding:11px;margin:12px -10px 0;font-weight:800}
+.container{max-width:760px;margin:auto;padding:18px 14px 100px}
+.card{background:#fff;border-radius:28px;padding:22px;margin-bottom:16px;box-shadow:0 5px 18px rgba(0,0,0,.07)}
 .balance{background:#17233a;color:#fff;text-align:center}
-.balance-number{color:#16d967;font-size:44px;font-weight:900;margin:12px 0}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-button,.btn{display:block;width:100%;border:0;border-radius:18px;padding:16px;background:#2f68df;color:#fff;font-size:17px;font-weight:700;text-decoration:none;text-align:center;cursor:pointer}
+.balance-number{font-size:42px;font-weight:900;color:#19d46a;margin:10px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.btn,button{width:100%;border:0;border-radius:18px;padding:15px;background:#326be0;color:#fff;font-size:16px;font-weight:800;text-decoration:none;text-align:center;cursor:pointer}
 .green{background:#14a85b}.dark{background:#172d69}.yellow{background:#ffd95c;color:#17213a}.red{background:#e92835}
-.plan{border:1px solid #dce1e9;border-radius:24px;padding:20px;margin-top:16px}
-.price{font-size:34px;font-weight:900;margin:8px 0}
-.reward{background:#e8f8ee;border-left:5px solid #14a85b;padding:14px;border-radius:12px;margin:12px 0;font-size:18px;font-weight:800}
-input{width:100%;padding:15px;border:1px solid #ccd3df;border-radius:14px;margin:7px 0 12px;font-size:16px}
-.notice{background:#fff4cf;border-left:5px solid #e4b500;padding:14px;border-radius:12px;margin-bottom:15px}
-.success{background:#e5f8ec;border-left:5px solid #14a85b;padding:14px;border-radius:12px;margin-bottom:15px}
-.error{background:#ffe5e5;border-left:5px solid #e92835;padding:14px;border-radius:12px;margin-bottom:15px}
-.history{border-bottom:1px solid #ddd;padding:13px 0}
-.bottom{position:fixed;bottom:0;left:0;right:0;background:#fff;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #ddd;z-index:5}
-.bottom a{padding:12px 4px;text-align:center;color:#4b5260;text-decoration:none;font-size:13px}
+input{width:100%;padding:15px;border:1px solid #cdd4df;border-radius:15px;margin:7px 0 11px;font-size:16px}
+.notice{background:#fff4cf;border-left:5px solid #e4b500;padding:14px;border-radius:12px;margin:12px 0}
+.success{background:#e5f8ec;border-left-color:#14a85b}
+.error{background:#ffe5e8;border-left-color:#e92835}
+.plan{border:1px solid #dce1e9;border-radius:22px;padding:18px;margin-top:12px}
+.price{font-size:32px;font-weight:900;margin:5px 0 10px}
+.task{background:#f0f3f8;border-radius:14px;padding:13px;margin:8px 0}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.status{display:inline-block;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:800}
+.pending{background:#fff0bd;color:#775700}.approved,.paid{background:#dff7e8;color:#0a7b3f}
+.rejected{background:#ffe0e4;color:#a7192e}
+.history{border-bottom:1px solid #e1e4e9;padding:12px 0}
+.muted{color:#697386;font-size:13px}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ddd;display:grid;grid-template-columns:repeat(4,1fr);z-index:10}
+.bottom a{text-align:center;text-decoration:none;color:#4b5260;padding:10px 3px;font-size:13px}
 h1,h2,h3{margin-top:0}
-@media(max-width:500px){.balance-number{font-size:38px}}
+small{color:#687386}
+@media(max-width:520px){.grid{gap:8px}.btn,button{padding:14px 8px}.balance-number{font-size:36px}}
 </style>
 </head>
 <body>
-
 <div class="top">
   <div class="logo">NEXA</div>
   <div class="subtitle">WORK & SERVICES PLATFORM</div>
 </div>
 
 <div class="container">
+{% with messages=get_flashed_messages(with_categories=true) %}
+{% for category,message in messages %}
+<div class="notice {{ 'success' if category=='success' else 'error' }}">{{ message }}</div>
+{% endfor %}
+{% endwith %}
 
 {% if not user %}
-
 <div class="card">
   <h1>Welcome to NEXA</h1>
-  <div class="notice">
-    This website is a demo/work prototype. It does not accept real deposits
-    or transfer real money.
-  </div>
-
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% for category, message in messages %}
-      <div class="{{ 'success' if category == 'success' else 'error' }}">{{ message }}</div>
-    {% endfor %}
-  {% endwith %}
-
   <h2>Login</h2>
-  <form method="POST" action="/login">
+  <form method="post" action="/login">
     <input name="phone" placeholder="Phone number" required>
     <input name="password" type="password" placeholder="Password" required>
     <button type="submit">Login</button>
@@ -65,14 +63,13 @@ h1,h2,h3{margin-top:0}
 
 <div class="card">
   <h2>Create Account</h2>
-  <form method="POST" action="/register">
+  <form method="post" action="/register">
     <input name="phone" placeholder="Phone number" required>
-    <input name="password" type="password" placeholder="Password" required>
-    <input name="referral" placeholder="Referral code (optional)">
-    <button class="green" type="submit">Register</button>
+    <input name="password" type="password" placeholder="Password (6+ characters)" required>
+    <input name="referral" value="{{ request.args.get('ref','') }}" placeholder="Referral code (optional)">
+    <button class="green" type="submit">Create Account</button>
   </form>
 </div>
-
 {% else %}
 
 <div class="card balance">
@@ -82,131 +79,137 @@ h1,h2,h3{margin-top:0}
 </div>
 
 <div class="grid">
-  <a class="btn" href="#plans">📋 Plans</a>
+  <a class="btn" href="#plans">💼 Plans</a>
   <a class="btn green" href="#deposit">💰 Deposit</a>
   <a class="btn" href="#tasks">📋 Tasks</a>
-  <a class="btn dark" href="/referral">👥 Invite</a>
+  <a class="btn dark" href="#referral">👥 Invite</a>
   <a class="btn green" href="#withdraw">💵 Withdraw</a>
-  <a class="btn dark" href="/support">🎧 Support</a>
+  <a class="btn dark" href="/support">🎧 Customer Service</a>
   <a class="btn yellow" href="/channel">📢 Channel</a>
   <a class="btn red" href="/logout">Logout</a>
 </div>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% for category, message in messages %}
-    <div class="{{ 'success' if category == 'success' else 'error' }}" style="margin-top:18px">{{ message }}</div>
-  {% endfor %}
-{% endwith %}
+<div class="card" id="deposit">
+  <h2>💰 Deposit</h2>
+  <p>Send the requested amount to the account below, then submit your transaction/reference number. Your deposit stays <b>PENDING</b> until admin verification.</p>
+  <div class="notice">
+    <b>{{ bank_name }}</b><br>
+    Account Name: {{ bank_account_name or 'Configure BANK_ACCOUNT_NAME in Render' }}<br>
+    Account Number: {{ bank_account_number or 'Configure BANK_ACCOUNT_NUMBER in Render' }}
+  </div>
+  <form method="post" action="/deposit">
+    <input name="amount" type="number" min="1" step="0.01" placeholder="Deposit amount (ETB)" required>
+    <input name="reference" placeholder="Transaction / reference number" required>
+    <button class="green" type="submit">Submit Deposit</button>
+  </form>
+</div>
 
 <div class="card" id="plans">
-  <h2>Available Plans</h2>
-  <p>Select a plan based on the package amount and its daily reward.</p>
-
+  <h2>💼 Plans</h2>
+  <p class="muted">A plan is activated only from your available approved wallet balance.</p>
   {% for plan in plans %}
   <div class="plan">
-    <h2>{{ plan["name"] }}</h2>
-    <div class="price">{{ "{:,.0f}".format(plan["price"]) }} ETB</div>
-    <div class="reward">
-      Daily Reward: {{ "{:,.0f}".format(plan["daily_reward"]) }} ETB
-    </div>
-    <div class="notice">
-      Demo package. Plan activation/payment is handled according to the site's
-      verification flow.
-    </div>
+    <div class="row"><h3>{{ plan["name"] }}</h3><b>{{ "%.0f"|format(plan["price"]) }} ETB</b></div>
+    <div class="task"><div class="row"><span>Daily Task Reward</span><b>{{ "%.0f"|format(plan["daily_reward"]) }} ETB</b></div></div>
+    <form method="post" action="/start-plan/{{ plan['id'] }}">
+      <button type="submit">Activate Plan</button>
+    </form>
   </div>
   {% endfor %}
 </div>
 
-<div class="card" id="deposit">
-  <h2>💰 Deposit</h2>
-  <p>Send the requested amount to the account shown below, then submit your
-     transaction/reference number for verification.</p>
-
-  <div class="notice">
-    <strong>{{ bank_name }}</strong><br>
-    Account Name: {{ bank_account_name or "Set BANK_ACCOUNT_NAME in Render" }}<br>
-    Account Number: {{ bank_account_number or "Set BANK_ACCOUNT_NUMBER in Render" }}
-  </div>
-
-  <form method="POST" action="/deposit">
-    <input name="amount" type="number" min="1" step="0.01"
-           placeholder="Deposit amount (ETB)" required>
-    <input name="reference"
-           placeholder="Transaction / reference number" required>
-    <button class="green" type="submit">Submit Deposit for Verification</button>
-  </form>
+<div class="card" id="tasks">
+  <h2>📋 My Tasks</h2>
+  {% if tasks %}
+    {% for task in tasks %}
+    <div class="task">
+      <div class="row">
+        <div><b>{{ task["task_name"] }}</b><br><small>{{ task["created_at"] }}</small></div>
+        <b>{{ "%.2f"|format(task["reward"]) }} ETB</b>
+      </div>
+      <br>
+      {% if task["completed"] %}
+        <span class="status approved">✓ COMPLETED</span>
+      {% else %}
+        <form method="post" action="/complete-task/{{ task['id'] }}">
+          <button class="green" type="submit">Complete Task</button>
+        </form>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <p class="muted">No tasks yet.</p>
+  {% endif %}
 </div>
 
 <div class="card" id="withdraw">
   <h2>💵 Withdraw</h2>
-  <p>Enter the amount and the bank account details for your withdrawal request.</p>
-  <form method="POST" action="/withdraw">
-    <input name="amount" type="number" min="1" step="0.01"
-           placeholder="Withdrawal amount (ETB)" required>
-    <input name="account_name" placeholder="Account name" required>
-    <input name="account_number" placeholder="Account number" required>
-    <button class="green" type="submit">Submit Withdrawal</button>
+  <p>Withdrawal requests are reserved from your available balance and remain <b>PENDING</b> until admin review.</p>
+  <form method="post" action="/withdraw">
+    <input name="amount" type="number" min="1" step="0.01" placeholder="Withdrawal amount (ETB)" required>
+    <input name="account_number" placeholder="Receiving account number" required>
+    <input name="account_name" placeholder="Receiving account name" required>
+    <button class="green" type="submit">Request Withdrawal</button>
   </form>
 </div>
 
-<div class="card" id="tasks">
-  <h2>📋 Tasks</h2>
-  <p>Task management will appear here when tasks are assigned to your account.</p>
-</div>
-
-<div class="card">
-  <h2>Deposit History</h2>
-  {% if deposits %}
-    {% for item in deposits %}
-      <div class="history">
-        <strong>{{ "%.2f"|format(item["amount"]) }} ETB</strong><br>
-        Reference: {{ item["reference"] }}<br>
-        Status: {{ item["status"] }}
-      </div>
-    {% endfor %}
-  {% else %}
-    <p>No deposits submitted yet.</p>
+<div class="card" id="referral">
+  <h2>👥 Referral Link</h2>
+  <p>Your referral code: <b>{{ user["referral_code"] }}</b></p>
+  <a class="btn dark" href="/referral">Generate / Show My Referral Link</a>
+  {% if referral_link %}
+  <input value="{{ referral_link }}" readonly onclick="this.select()">
+  <p class="muted">Tap the link to select it, then copy and share it.</p>
   {% endif %}
 </div>
 
 <div class="card">
-  <h2>Withdrawal History</h2>
-  {% if withdrawals %}
-    {% for item in withdrawals %}
-      <div class="history">
-        <strong>{{ "%.2f"|format(item["amount"]) }} ETB</strong><br>
-        Net: {{ "%.2f"|format(item["net_amount"]) }} ETB<br>
-        Status: {{ item["status"] }}
-      </div>
-    {% endfor %}
+  <h2>🎧 Customer Service</h2>
+  {% if customer_service_url %}
+  <a class="btn dark" href="{{ customer_service_url }}" target="_blank">Contact Customer Service</a>
   {% else %}
-    <p>No withdrawals submitted yet.</p>
+  <p class="muted">Customer service link is not configured.</p>
   {% endif %}
 </div>
 
 <div class="card">
-  <h2>History</h2>
-  {% if history %}
-    {% for item in history %}
-      <div class="history">
-        <strong>{{ item["action"] }}</strong><br>
-        Amount: {{ "%.2f"|format(item["amount"]) }} ETB<br>
-        <small>{{ item["note"] }}</small>
-      </div>
-    {% endfor %}
+  <h2>📢 Official Channel</h2>
+  {% if official_telegram_url %}
+  <a class="btn yellow" href="{{ official_telegram_url }}" target="_blank">Open Official Channel</a>
   {% else %}
-    <p>No history yet.</p>
+  <p class="muted">Official channel link is not configured.</p>
   {% endif %}
 </div>
 
 <div class="card">
-  <h2>About NEXA</h2>
-  <p>NEXA is a work and services platform prototype for demonstrating
-     accounts, plans, deposits, withdrawals and wallet features.</p>
-  <div class="notice">
-    Demo mode: no guaranteed investment returns or real-money transfer is
-    processed by this prototype.
+  <h2>💰 Deposit History</h2>
+  {% for item in deposits %}
+  <div class="history">
+    <div class="row"><b>{{ "%.2f"|format(item["amount"]) }} ETB</b><span class="status {{ item['status']|lower }}">{{ item["status"] }}</span></div>
+    <small>Ref: {{ item["reference"] }} · {{ item["created_at"] }}</small>
   </div>
+  {% else %}<p class="muted">No deposits yet.</p>{% endfor %}
+</div>
+
+<div class="card">
+  <h2>💵 Withdrawal History</h2>
+  {% for item in withdrawals %}
+  <div class="history">
+    <div class="row"><b>{{ "%.2f"|format(item["amount"]) }} ETB</b><span class="status {{ item['status']|lower }}">{{ item["status"] }}</span></div>
+    <small>Net: {{ "%.2f"|format(item["net_amount"]) }} ETB · {{ item["created_at"] }}</small>
+  </div>
+  {% else %}<p class="muted">No withdrawals yet.</p>{% endfor %}
+</div>
+
+<div class="card">
+  <h2>Activity History</h2>
+  {% for item in history %}
+  <div class="history">
+    <b>{{ item["action"] }}</b><br>
+    <span>{{ "%.2f"|format(item["amount"]) }} ETB</span><br>
+    <small>{{ item["note"] or "" }} · {{ item["created_at"] }}</small>
+  </div>
+  {% else %}<p class="muted">No history yet.</p>{% endfor %}
 </div>
 
 {% endif %}
@@ -217,9 +220,8 @@ h1,h2,h3{margin-top:0}
   <a href="/">🏠<br>Home</a>
   <a href="#deposit">💰<br>Wallet</a>
   <a href="#tasks">📊<br>Tasks</a>
-  <a href="/referral">👤<br>My</a>
+  <a href="#referral">👤<br>My</a>
 </div>
 {% endif %}
-
 </body>
-  </html>
+    </html>
