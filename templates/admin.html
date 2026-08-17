@@ -1,114 +1,294 @@
+<!-- templates/admin.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NEXA Admin</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#eef2f7;color:#18233d}
-header{background:#142c69;color:#fff;padding:20px;text-align:center}
-main{max-width:900px;margin:auto;padding:18px 14px 50px}
-.card{background:#fff;border-radius:22px;padding:18px;margin-bottom:16px;box-shadow:0 4px 14px rgba(0,0,0,.07)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.stat{background:#f5f7fb;border-radius:16px;padding:15px;text-align:center}
-.num{font-size:25px;font-weight:900}
-.item{border:1px solid #dce1e9;border-radius:16px;padding:15px;margin:10px 0}
-.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
-button{border:0;border-radius:12px;padding:11px 15px;font-weight:800;cursor:pointer}
-.approve{background:#14a85b;color:#fff}.reject{background:#e92835;color:#fff}.paid{background:#326be0;color:#fff}
-.badge{padding:5px 9px;border-radius:999px;font-size:12px;font-weight:800}
-.pending{background:#fff0bd;color:#775700}.approved{background:#dff7e8;color:#0a7b3f}.rejected{background:#ffe0e4;color:#a7192e}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-small{color:#697386}
-@media(max-width:650px){.stats{grid-template-columns:1fr}.row{align-items:flex-start;flex-direction:column}.actions{width:100%}.actions form{width:100%}.actions button{width:100%}}
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#eef3f9;
+color:#17233d
+}
+.header{
+background:#071f4d;
+color:white;
+padding:18px 25px;
+display:flex;
+justify-content:space-between;
+align-items:center
+}
+.container{
+max-width:1200px;
+margin:auto;
+padding:22px
+}
+.card{
+background:white;
+padding:22px;
+border-radius:18px;
+margin-bottom:20px;
+box-shadow:0 5px 25px #0001
+}
+input,select{
+width:100%;
+padding:13px;
+border:1px solid #ccd4df;
+border-radius:10px;
+margin:6px 0
+}
+button{
+border:0;
+padding:11px 15px;
+border-radius:9px;
+font-weight:bold;
+cursor:pointer
+}
+.login{
+max-width:420px;
+margin:80px auto
+}
+.login button{width:100%;background:#071f4d;color:white}
+.stats{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:12px
+}
+.stat{
+background:#071f4d;
+color:white;
+padding:20px;
+border-radius:15px
+}
+.stat b{
+display:block;
+font-size:25px;
+margin-top:8px
+}
+.table-wrap{overflow:auto}
+table{
+width:100%;
+border-collapse:collapse;
+min-width:850px
+}
+th,td{
+padding:12px;
+border-bottom:1px solid #e4e7ed;
+text-align:left
+}
+.badge{
+padding:5px 9px;
+border-radius:20px;
+font-size:12px;
+font-weight:bold
+}
+.pending{background:#fff0bb}
+.processing{background:#dbe8ff}
+.approved,.paid{background:#d6f7e2}
+.rejected{background:#ffdcdc}
+.approve{background:#10a75b;color:white}
+.reject{background:#e52d3b;color:white}
+.paidbtn{background:#0d8dce;color:white}
+.logout{background:#e52d3b;color:white}
+.action{
+display:flex;
+gap:6px;
+flex-wrap:wrap
+}
 </style>
 </head>
 <body>
-<header>
-  <h1>NEXA ADMIN</h1>
-  <div>Pending verification dashboard</div>
-</header>
 
-<main>
+{% if page == "login" %}
+
+<div class="login card">
+<h1>NEXA Admin</h1>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category,message in messages %}
+<p>{{ message }}</p>
+{% endfor %}
+{% endwith %}
+
+<form method="POST">
+<input name="admin_key" placeholder="Admin Key" required>
+<input name="admin_secret" type="password" placeholder="Admin Secret Key" required>
+<button>Login</button>
+</form>
+</div>
+
+{% else %}
+
+<div class="header">
+<h2>NEXA Admin Dashboard</h2>
+<a class="logout" style="padding:10px 15px;border-radius:8px;color:white" href="{{ url_for('admin_logout') }}">
+Logout
+</a>
+</div>
+
+<div class="container">
+
 <div class="stats">
-  <div class="stat"><div>Users</div><div class="num">{{ user_count }}</div></div>
-  <div class="stat"><div>Pending Deposits</div><div class="num">{{ "%.2f"|format(pending_deposit_total) }} ETB</div></div>
-  <div class="stat"><div>Pending Withdrawals</div><div class="num">{{ "%.2f"|format(pending_withdrawal_total) }} ETB</div></div>
+<div class="stat">Users<b>{{ stats.users }}</b></div>
+<div class="stat">Pending Deposits<b>{{ stats.pending_deposits }}</b></div>
+<div class="stat">Processing Withdrawals<b>{{ stats.processing_withdrawals }}</b></div>
+<div class="stat">Approved Deposits<b>{{ "%.2f"|format(stats.total_deposits) }}</b></div>
+<div class="stat">Paid Withdrawals<b>{{ "%.2f"|format(stats.total_withdrawals) }}</b></div>
 </div>
 
 <div class="card">
-<h2>💰 Pending Deposits</h2>
+<h2>Pending Deposits</h2>
+<div class="table-wrap">
+<table>
+<tr>
+<th>ID</th>
+<th>User</th>
+<th>Amount</th>
+<th>Reference</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+
 {% for d in pending_deposits %}
-<div class="item">
-  <div class="row">
-    <b>{{ d["phone"] }}</b>
-    <span class="badge pending">PENDING</span>
-  </div>
-  <p><b>Amount:</b> {{ "%.2f"|format(d["amount"]) }} ETB</p>
-  <p><b>Reference:</b> {{ d["reference"] }}</p>
-  <small>Submitted: {{ d["created_at"] }}</small>
-  <div class="actions">
-    <form method="post" action="/admin/deposit/{{ d['id'] }}/approve?key={{ admin_key }}" onsubmit="return confirm('Approve this deposit and add the amount to the wallet?')">
-      <button class="approve" type="submit">✓ Approve & Credit</button>
-    </form>
-    <form method="post" action="/admin/deposit/{{ d['id'] }}/reject?key={{ admin_key }}" onsubmit="return confirm('Reject this deposit?')">
-      <button class="reject" type="submit">✕ Reject</button>
-    </form>
-  </div>
+<tr>
+<td>{{ d.id }}</td>
+<td>{{ d.username }}</td>
+<td>{{ "%.2f"|format(d.amount) }} ETB</td>
+<td>{{ d.reference }}</td>
+<td>{{ d.created_at }}</td>
+<td>
+<div class="action">
+<form method="POST" action="{{ url_for('approve_deposit', deposit_id=d.id) }}">
+<button class="approve">Approve</button>
+</form>
+
+<form method="POST" action="{{ url_for('reject_deposit', deposit_id=d.id) }}">
+<button class="reject">Reject</button>
+</form>
 </div>
+</td>
+</tr>
 {% else %}
-<p>No pending deposits.</p>
+<tr><td colspan="6">No pending deposits.</td></tr>
 {% endfor %}
+</table>
+</div>
 </div>
 
 <div class="card">
-<h2>💵 Pending Withdrawals</h2>
-{% for w in pending_withdrawals %}
-<div class="item">
-  <div class="row">
-    <b>{{ w["phone"] }}</b>
-    <span class="badge pending">PENDING</span>
-  </div>
-  <p><b>Requested:</b> {{ "%.2f"|format(w["amount"]) }} ETB</p>
-  <p><b>Fee:</b> {{ "%.2f"|format(w["fee"]) }} ETB · <b>Net:</b> {{ "%.2f"|format(w["net_amount"]) }} ETB</p>
-  <p><b>Account:</b> {{ w["account_name"] }} · {{ w["account_number"] }}</p>
-  <small>Submitted: {{ w["created_at"] }}</small>
-  <div class="actions">
-    <form method="post" action="/admin/withdrawal/{{ w['id'] }}/paid?key={{ admin_key }}" onsubmit="return confirm('Mark this withdrawal as PAID?')">
-      <button class="paid" type="submit">✓ Mark Paid</button>
-    </form>
-    <form method="post" action="/admin/withdrawal/{{ w['id'] }}/reject?key={{ admin_key }}" onsubmit="return confirm('Reject this withdrawal and return the reserved amount?')">
-      <button class="reject" type="submit">✕ Reject & Return Balance</button>
-    </form>
-  </div>
+<h2>Processing Withdrawals</h2>
+<p>After you actually send the money to the user's bank account, press <b>PAID</b>.</p>
+
+<div class="table-wrap">
+<table>
+<tr>
+<th>ID</th>
+<th>User</th>
+<th>Amount</th>
+<th>Fee</th>
+<th>User Receives</th>
+<th>Bank</th>
+<th>Account Name</th>
+<th>Account Number</th>
+<th>Action</th>
+</tr>
+
+{% for w in withdrawals %}
+<tr>
+<td>{{ w.id }}</td>
+<td>{{ w.username }}</td>
+<td>{{ "%.2f"|format(w.amount) }}</td>
+<td>{{ "%.2f"|format(w.fee) }}</td>
+<td>{{ "%.2f"|format(w.receive_amount) }}</td>
+<td>{{ w.bank_name }}</td>
+<td>{{ w.account_name }}</td>
+<td>{{ w.account_number }}</td>
+<td>
+<div class="action">
+<form method="POST" action="{{ url_for('mark_withdrawal_paid', withdrawal_id=w.id) }}">
+<button class="paidbtn">Mark PAID</button>
+</form>
+
+<form method="POST" action="{{ url_for('reject_withdrawal', withdrawal_id=w.id) }}">
+<button class="reject">Reject</button>
+</form>
 </div>
+</td>
+</tr>
 {% else %}
-<p>No pending withdrawals.</p>
+<tr><td colspan="9">No processing withdrawals.</td></tr>
 {% endfor %}
+</table>
+</div>
 </div>
 
 <div class="card">
-<h2>Recent Deposit Reviews</h2>
+<h2>Recent Deposits</h2>
+
+<div class="table-wrap">
+<table>
+<tr>
+<th>ID</th>
+<th>User</th>
+<th>Amount</th>
+<th>Reference</th>
+<th>Status</th>
+<th>Date</th>
+</tr>
+
 {% for d in recent_deposits %}
-<div class="item">
-  <div class="row"><b>{{ d["phone"] }}</b><span class="badge {{ d['status']|lower }}">{{ d["status"] }}</span></div>
-  <div>{{ "%.2f"|format(d["amount"]) }} ETB · Ref: {{ d["reference"] }}</div>
-  <small>{{ d["reviewed_at"] or d["created_at"] }}</small>
+<tr>
+<td>{{ d.id }}</td>
+<td>{{ d.username }}</td>
+<td>{{ "%.2f"|format(d.amount) }} ETB</td>
+<td>{{ d.reference }}</td>
+<td><span class="badge {{ d.status|lower }}">{{ d.status }}</span></td>
+<td>{{ d.created_at }}</td>
+</tr>
+{% endfor %}
+</table>
 </div>
-{% else %}<p>No reviewed deposits yet.</p>{% endfor %}
 </div>
 
 <div class="card">
-<h2>Recent Withdrawal Reviews</h2>
-{% for w in recent_withdrawals %}
-<div class="item">
-  <div class="row"><b>{{ w["phone"] }}</b><span class="badge {{ w['status']|lower }}">{{ w["status"] }}</span></div>
-  <div>{{ "%.2f"|format(w["amount"]) }} ETB · Net: {{ "%.2f"|format(w["net_amount"]) }} ETB</div>
-  <small>{{ w["reviewed_at"] or w["created_at"] }}</small>
+<h2>Users</h2>
+
+<div class="table-wrap">
+<table>
+<tr>
+<th>ID</th>
+<th>Username</th>
+<th>Referral Code</th>
+<th>Balance</th>
+<th>Reserved</th>
+<th>Total Deposit</th>
+<th>Total Earned</th>
+<th>Total Withdrawn</th>
+<th>Joined</th>
+</tr>
+
+{% for u in users %}
+<tr>
+<td>{{ u.id }}</td>
+<td>{{ u.username }}</td>
+<td>{{ u.referral_code }}</td>
+<td>{{ "%.2f"|format(u.balance) }}</td>
+<td>{{ "%.2f"|format(u.reserved_balance) }}</td>
+<td>{{ "%.2f"|format(u.total_deposit) }}</td>
+<td>{{ "%.2f"|format(u.total_earned) }}</td>
+<td>{{ "%.2f"|format(u.total_withdrawn) }}</td>
+<td>{{ u.created_at }}</td>
+</tr>
+{% endfor %}
+</table>
 </div>
-{% else %}<p>No reviewed withdrawals yet.</p>{% endfor %}
 </div>
-</main>
+
+</div>
+{% endif %}
+
 </body>
 </html>
