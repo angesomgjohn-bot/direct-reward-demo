@@ -3,8 +3,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NEXA — Work & Services Platform</title>
+
 <style>
 *{box-sizing:border-box}
 body{
@@ -15,6 +16,7 @@ body{
 }
 a{text-decoration:none;color:inherit}
 button,input,select{font:inherit}
+
 .top{
     background:#071f4d;
     color:white;
@@ -26,6 +28,7 @@ button,input,select{font:inherit}
     top:0;
     z-index:10
 }
+
 .brand{
     display:flex;
     align-items:center;
@@ -33,6 +36,7 @@ button,input,select{font:inherit}
     font-size:25px;
     font-weight:800
 }
+
 .logo{
     width:44px;
     height:44px;
@@ -46,22 +50,27 @@ button,input,select{font:inherit}
     font-weight:900;
     font-size:13px
 }
+
 .nav{
     display:flex;
     gap:8px;
     flex-wrap:wrap
 }
+
 .nav a{
     padding:9px 12px;
     border-radius:9px;
     color:white
 }
+
 .nav a:hover{background:#15346d}
+
 .container{
     max-width:1100px;
     margin:auto;
     padding:22px
 }
+
 .hero{
     background:#071f4d;
     color:white;
@@ -71,6 +80,7 @@ button,input,select{font:inherit}
     justify-content:center;
     padding:25px
 }
+
 .auth{
     width:100%;
     max-width:980px;
@@ -80,58 +90,101 @@ button,input,select{font:inherit}
     overflow:hidden;
     box-shadow:0 20px 60px #0004
 }
+
 .login-side{
     background:#071f4d;
     padding:42px
 }
+
 .register-side{
     background:white;
     color:#17233d;
     padding:42px
 }
+
 .auth-logo{
     text-align:center;
     margin-bottom:25px
 }
+
 .auth-logo .logo{
     margin:auto;
     width:80px;
     height:80px;
     font-size:22px
 }
+
 .auth-logo h1{
     margin:10px 0 2px;
     font-size:38px
 }
-.auth-logo p{margin:0;opacity:.8}
+
+.auth-logo p{
+    margin:0;
+    opacity:.8
+}
+
 .field{
     width:100%;
     padding:15px 16px;
     border:1px solid #ccd3df;
     border-radius:12px;
-    margin:8px 0;
+    margin:7px 0;
     outline:none
 }
-.field:focus{border-color:#eab52e}
+
+.field:focus{
+    border-color:#071f4d
+}
+
 .btn{
+    display:inline-block;
     border:0;
-    border-radius:12px;
-    padding:15px 20px;
+    border-radius:11px;
+    padding:12px 18px;
     cursor:pointer;
     font-weight:800;
-    width:100%;
-    margin-top:8px
+    text-align:center
 }
-.btn-gold{background:#efb92f;color:#071f4d}
-.btn-blue{background:#071f4d;color:white}
-.btn-green{background:#12a85b;color:white}
-.btn-red{background:#e52b37;color:white}
+
+.btn-blue{
+    background:#071f4d;
+    color:white
+}
+
+.btn-green{
+    background:#07925b;
+    color:white
+}
+
+.btn-gold{
+    background:#dba814;
+    color:white
+}
+
+.btn-red{
+    background:#dc3545;
+    color:white
+}
+
 .flash{
-    padding:13px;
-    border-radius:10px;
-    margin-bottom:12px;
-    background:#fff1c8
+    padding:13px 16px;
+    border-radius:12px;
+    margin-bottom:15px;
+    background:#fff5c9;
+    border-left:5px solid #e1ae0b
 }
+
+.flash.error{
+    background:#ffe3e3;
+    border-left-color:#dc3545
+}
+
+.flash.success{
+    background:#dcf7e7;
+    border-left-color:#07925b
+}
+
 .dashboard-head{
     background:#071f4d;
     color:white;
@@ -139,32 +192,38 @@ button,input,select{font:inherit}
     padding:28px;
     margin-bottom:20px
 }
+
 .stats{
     display:grid;
     grid-template-columns:repeat(4,1fr);
     gap:14px;
     margin-bottom:20px
 }
+
 .stat{
     padding:20px;
     border-radius:16px;
     color:white;
     min-height:120px
 }
+
 .stat:nth-child(1){background:#102d64}
 .stat:nth-child(2){background:#07925b}
 .stat:nth-child(3){background:#dba814}
 .stat:nth-child(4){background:#5834a0}
+
 .stat strong{
     display:block;
     font-size:25px;
     margin-top:10px
 }
+
 .grid{
     display:grid;
     grid-template-columns:repeat(3,1fr);
     gap:16px
 }
+
 .card{
     background:white;
     padding:22px;
@@ -172,36 +231,45 @@ button,input,select{font:inherit}
     box-shadow:0 4px 20px #15294c12;
     margin-bottom:18px
 }
+
 .plan{
     border:1px solid #dce1ea;
     text-align:center
 }
+
 .plan h3{margin:0}
+
 .plan .amount{
     font-size:25px;
     font-weight:900;
     margin:12px 0
 }
+
 .plan .daily{
     margin-bottom:14px
 }
+
 .section-title{
     display:flex;
     align-items:center;
     justify-content:space-between;
     margin:25px 0 14px
 }
+
 .table-wrap{overflow:auto}
+
 table{
     width:100%;
     border-collapse:collapse;
     min-width:650px
 }
+
 th,td{
     padding:12px;
     border-bottom:1px solid #e5e8ef;
     text-align:left
 }
+
 .badge{
     display:inline-block;
     padding:6px 9px;
@@ -210,10 +278,12 @@ th,td{
     font-size:12px;
     font-weight:800
 }
+
 .badge.pending{background:#fff0bd}
 .badge.processing{background:#dce8ff}
 .badge.paid,.badge.approved{background:#d7f7e4}
 .badge.rejected{background:#ffe0e0}
+
 .bank-box{
     background:#fff5c9;
     border-left:6px solid #e1ae0b;
@@ -221,21 +291,38 @@ th,td{
     border-radius:14px;
     margin:15px 0
 }
+
 .ref{
     background:#071f4d;
     color:white;
     padding:18px;
     border-radius:15px
 }
+
+.commission-box{
+    background:#e8f8ee;
+    border-left:6px solid #07925b;
+    padding:18px;
+    border-radius:14px;
+    margin:15px 0
+}
+
+.commission{
+    color:#07864f;
+    font-weight:800
+}
+
 .bottom{
     display:none
 }
+
 @media(max-width:800px){
     .auth{grid-template-columns:1fr}
     .login-side,.register-side{padding:25px}
     .stats{grid-template-columns:1fr 1fr}
     .grid{grid-template-columns:1fr 1fr}
     .nav{display:none}
+
     .bottom{
         display:flex;
         position:fixed;
@@ -247,352 +334,987 @@ th,td{
         z-index:20;
         justify-content:space-around
     }
+
     .bottom a{
         padding:11px 5px;
         text-align:center;
         font-size:12px
     }
 }
+
 @media(max-width:500px){
     .stats,.grid{grid-template-columns:1fr}
     .container{padding:14px}
 }
 </style>
 </head>
+
 <body>
 
 {% if not current_user %}
+
 <div class="hero">
-    <div class="auth">
 
-        <div class="login-side">
-            <div class="auth-logo">
-                <div class="logo">NEXA</div>
-                <h1>NEXA</h1>
-                <p>Grow Together. Earn Together</p>
-            </div>
+<div class="auth">
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% for category,message in messages %}
-                    <div class="flash">{{ message }}</div>
-                {% endfor %}
-            {% endwith %}
+<div class="login-side">
 
-            <h2>Welcome Back</h2>
-            <p>Login to your account</p>
+<div class="auth-logo">
+<div class="logo">NEXA</div>
+<h1>NEXA</h1>
+<p>Work & Services Platform</p>
+</div>
 
-            <form method="POST" action="{{ url_for('login') }}">
-                <input class="field" name="username" placeholder="Phone Number or Username" required>
-                <input class="field" type="password" name="password" placeholder="Password" required>
-                <button class="btn btn-gold">Login</button>
-            </form>
-        </div>
+<h2>Login</h2>
 
-        <div class="register-side">
-            <div class="auth-logo">
-                <div class="logo">NEXA</div>
-                <h2>Create Account</h2>
-                <p>Join NEXA today</p>
-            </div>
+<form method="POST" action="{{ url_for('login') }}">
 
-            <form method="POST" action="{{ url_for('register') }}">
-                <input class="field" name="username" placeholder="Phone Number or Username" required>
-                <input class="field" type="password" name="password" placeholder="Password" required>
-                <input class="field" type="password" name="confirm_password" placeholder="Confirm Password" required>
-                <input class="field" name="referral" value="{{ referral or '' }}" placeholder="Referral Code (Optional)">
-                <button class="btn btn-blue">Register</button>
-            </form>
-        </div>
+<input
+class="field"
+type="text"
+name="username"
+placeholder="Username"
+required
+>
 
-    </div>
+<input
+class="field"
+type="password"
+name="password"
+placeholder="Password"
+required
+>
+
+<button class="btn btn-green" style="width:100%">
+Login
+</button>
+
+</form>
+
+</div>
+
+
+<div class="register-side">
+
+<h2>Create NEXA Account</h2>
+
+<form method="POST" action="{{ url_for('register') }}">
+
+<input
+class="field"
+type="text"
+name="username"
+placeholder="Username"
+required
+>
+
+<input
+class="field"
+type="password"
+name="password"
+placeholder="Password"
+required
+>
+
+<input
+class="field"
+type="password"
+name="confirm_password"
+placeholder="Confirm Password"
+required
+>
+
+<input
+class="field"
+type="text"
+name="referral"
+value="{{ referral or '' }}"
+placeholder="Referral Code (optional)"
+>
+
+<button class="btn btn-blue" style="width:100%">
+Register
+</button>
+
+</form>
+
+</div>
+
+</div>
+
 </div>
 
 {% else %}
 
 <header class="top">
-    <a class="brand" href="{{ url_for('dashboard') }}">
-        <span class="logo">NEXA</span>
-        <span>NEXA</span>
-    </a>
 
-    <nav class="nav">
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('dashboard') }}">Buy Plan</a>
-        <a href="{{ url_for('wallet') }}">Wallet</a>
-        <a href="{{ url_for('deposit') }}">Deposit</a>
-        <a href="{{ url_for('withdraw') }}">Withdraw</a>
-        <a href="{{ url_for('team') }}">My Team</a>
-        <a href="{{ url_for('bank_bind') }}">Bank Details</a>
-        <a href="{{ url_for('support') }}">Support</a>
-        <a href="{{ url_for('channel') }}">Channel</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-    </nav>
+<div class="brand">
+<div class="logo">NEXA</div>
+NEXA
+</div>
+
+<nav class="nav">
+
+<a href="{{ url_for('dashboard') }}">Home</a>
+<a href="{{ url_for('wallet') }}">Wallet</a>
+<a href="{{ url_for('team') }}">Team</a>
+<a href="{{ url_for('bank_bind') }}">Bank</a>
+<a href="{{ url_for('support') }}">Support</a>
+<a href="{{ url_for('channel') }}">Channel</a>
+<a href="{{ url_for('logout') }}">Logout</a>
+
+</nav>
+
 </header>
+
 
 <main class="container">
 
 {% with messages = get_flashed_messages(with_categories=true) %}
-    {% for category,message in messages %}
-        <div class="flash">{{ message }}</div>
-    {% endfor %}
+
+{% for category,message in messages %}
+
+<div class="flash {{ category }}">
+{{ message }}
+</div>
+
+{% endfor %}
+
 {% endwith %}
 
-{% if page == "dashboard" or not page %}
+
+{% if page == "dashboard" %}
 
 <div class="dashboard-head">
-    <h1>NEXA Work & Services Platform</h1>
-    <p>Welcome, {{ current_user["username"] }}</p>
+
+<h1>Welcome, {{ current_user["username"] }}</h1>
+
+<p>
+Your referral code:
+<b>{{ current_user["referral_code"] }}</b>
+</p>
+
 </div>
+
 
 <div class="stats">
-    <div class="stat">
-        Wallet Balance
-        <strong>{{ "%.2f"|format(current_user["balance"]) }} ETB</strong>
-    </div>
-    <div class="stat">
-        Total Deposit
-        <strong>{{ "%.2f"|format(current_user["total_deposit"]) }} ETB</strong>
-    </div>
-    <div class="stat">
-        Total Earned
-        <strong>{{ "%.2f"|format(current_user["total_earned"]) }} ETB</strong>
-    </div>
-    <div class="stat">
-        Total Withdrawn
-        <strong>{{ "%.2f"|format(current_user["total_withdrawn"]) }} ETB</strong>
-    </div>
+
+<div class="stat">
+Wallet Balance
+<strong>
+{{ "%.2f"|format(current_user["balance"]) }} ETB
+</strong>
 </div>
 
+<div class="stat">
+Total Deposit
+<strong>
+{{ "%.2f"|format(current_user["total_deposit"]) }} ETB
+</strong>
+</div>
+
+<div class="stat">
+Total Earned
+<strong>
+{{ "%.2f"|format(current_user["total_earned"]) }} ETB
+</strong>
+</div>
+
+<div class="stat">
+Total Withdrawn
+<strong>
+{{ "%.2f"|format(current_user["total_withdrawn"]) }} ETB
+</strong>
+</div>
+
+</div>
+
+
+<div class="commission-box">
+
+<h3>Referral Commission</h3>
+
+<p>
+Level 1:
+<b>25%</b>
+</p>
+
+<p>
+Level 2:
+<b>3%</b>
+</p>
+
+<p>
+Level 3:
+<b>2%</b>
+</p>
+
+<p>
+Commission is automatically credited when an admin approves the deposit.
+</p>
+
+</div>
+
+
 <div class="section-title">
-    <h2>Available Plans</h2>
+<h2>Available Plans</h2>
 </div>
 
 <div class="grid">
+
 {% for code,plan_item in plans.items() %}
+
 <div class="card plan">
-    <h3>Plan {{ code }}</h3>
-    <div class="amount">{{ "{:,.0f}".format(plan_item.amount) }} ETB</div>
-    <div class="daily">Daily Profit: <b>{{ "{:,.0f}".format(plan_item.daily) }} ETB</b></div>
-    <a class="btn btn-blue" href="{{ url_for('buy_plan', plan_code=code) }}">
-        Buy Now
-    </a>
-</div>
-{% endfor %}
+
+<h3>Plan {{ code }}</h3>
+
+<div class="amount">
+{{ "{:,.0f}".format(plan_item.amount) }} ETB
 </div>
 
+<div class="daily">
+Daily Profit:
+<b>
+{{ "{:,.0f}".format(plan_item.daily) }} ETB
+</b>
+</div>
+
+<a
+class="btn btn-blue"
+href="{{ url_for('buy_plan', plan_code=code) }}"
+>
+Buy Now
+</a>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+
 <div class="section-title">
-    <h2>Quick Actions</h2>
+<h2>Quick Actions</h2>
 </div>
 
 <div class="grid">
-    <a class="card" href="{{ url_for('deposit') }}"><h3>💰 Deposit</h3><p>Submit a deposit and transaction reference.</p></a>
-    <a class="card" href="{{ url_for('withdraw') }}"><h3>💸 Withdraw</h3><p>Request a withdrawal from your wallet.</p></a>
-    <a class="card" href="{{ url_for('bank_bind') }}"><h3>🏦 Bank Bind</h3><p>Manage your receiving bank account.</p></a>
-    <a class="card" href="{{ url_for('team') }}"><h3>👥 My Team</h3><p>View your Level 1, 2 and 3 referrals.</p></a>
-    <a class="card" href="{{ url_for('support') }}"><h3>🎧 Customer Service</h3><p>Contact NEXA support.</p></a>
-    <a class="card" href="{{ url_for('channel') }}"><h3>📢 Channel</h3><p>Open the official NEXA channel.</p></a>
+
+<a
+class="card"
+href="{{ url_for('deposit') }}"
+>
+<h3>💰 Deposit</h3>
+<p>Submit a deposit and transaction reference.</p>
+</a>
+
+<a
+class="card"
+href="{{ url_for('withdraw') }}"
+>
+<h3>💸 Withdraw</h3>
+<p>Request a withdrawal from your wallet.</p>
+</a>
+
+<a
+class="card"
+href="{{ url_for('bank_bind') }}"
+>
+<h3>🏦 Bank Bind</h3>
+<p>Manage your receiving bank account.</p>
+</a>
+
+<a
+class="card"
+href="{{ url_for('team') }}"
+>
+<h3>👥 My Team</h3>
+<p>View Level 1, 2 and 3 referrals.</p>
+</a>
+
+<a
+class="card"
+href="{{ url_for('support') }}"
+>
+<h3>🎧 Customer Service</h3>
+<p>Contact NEXA support.</p>
+</a>
+
+<a
+class="card"
+href="{{ url_for('channel') }}"
+>
+<h3>📢 Channel</h3>
+<p>Open official NEXA channel.</p>
+</a>
+
 </div>
+
 
 <div class="ref">
-    <h3>Referral Link</h3>
-    <input class="field" value="{{ referral_url }}" readonly onclick="this.select()">
-    <button class="btn btn-gold" onclick="navigator.clipboard.writeText('{{ referral_url }}')">
-        Copy Referral Link
-    </button>
+
+<h3>Referral Link</h3>
+
+<input
+class="field"
+value="{{ referral_url }}"
+readonly
+onclick="this.select()"
+>
+
+<button
+class="btn btn-gold"
+onclick="navigator.clipboard.writeText('{{ referral_url }}')"
+>
+Copy Referral Link
+</button>
+
 </div>
+
 
 {% elif page == "deposit" %}
 
 <div class="card">
-    <h1>💰 Deposit</h1>
-    <p>
-        Send the requested amount to the account shown below,
-        then submit your transaction/reference number for verification.
-    </p>
 
-    <div class="bank-box">
-        <h3>{{ bank_name }}</h3>
-        <p><b>Account Name:</b> {{ bank_account_name }}</p>
-        <p><b>Account Number:</b> {{ bank_account_number }}</p>
-    </div>
+<h1>💰 Deposit</h1>
 
-    <form method="POST">
-        <input class="field" type="number" step="0.01" min="{{ 500 }}" name="amount" placeholder="Deposit amount (ETB)" required>
-        <input class="field" name="reference" placeholder="Transaction / reference number" required>
-        <button class="btn btn-green">Submit Deposit</button>
-    </form>
+<p>
+Minimum deposit:
+<b>500 ETB</b>
+</p>
+
+<p>
+Send the requested amount to the account below,
+then submit your transaction/reference number.
+</p>
+
+<div class="bank-box">
+
+<h3>{{ bank_name }}</h3>
+
+<p>
+<b>Account Name:</b>
+{{ bank_account_name }}
+</p>
+
+<p>
+<b>Account Number:</b>
+{{ bank_account_number }}
+</p>
+
 </div>
+
+<form method="POST">
+
+<input
+class="field"
+type="number"
+step="0.01"
+min="500"
+name="amount"
+placeholder="Deposit amount (ETB)"
+required
+>
+
+<input
+class="field"
+name="reference"
+placeholder="Transaction / reference number"
+required
+>
+
+<button class="btn btn-green">
+Submit Deposit
+</button>
+
+</form>
+
+</div>
+
 
 {% elif page == "payment" %}
 
 <div class="card">
-    <h1>💳 Plan {{ selected_plan }} Payment</h1>
-    <h2>{{ "{:,.0f}".format(plan.amount) }} ETB</h2>
-    <p>Complete the payment for Plan {{ selected_plan }}.</p>
 
-    <div class="bank-box">
-        <h3>Step 1 — Copy account for payment</h3>
-        <p><b>Payment Channel:</b> {{ bank_name }}</p>
-        <p><b>Account Name:</b> {{ bank_account_name }}</p>
-        <p><b>Account Number:</b> {{ bank_account_number }}</p>
-    </div>
+<h1>
+💳 Plan {{ selected_plan }} Payment
+</h1>
 
-    <form method="POST">
-        <input class="field" type="number" value="{{ plan.amount }}" readonly name="amount">
-        <input class="field" name="reference" placeholder="Transaction / reference number" required>
-        <button class="btn btn-green">Submit Payment</button>
-    </form>
+<h2>
+{{ "{:,.0f}".format(plan.amount) }} ETB
+</h2>
+
+<p>
+Complete the payment for Plan {{ selected_plan }}.
+</p>
+
+<div class="bank-box">
+
+<h3>
+Step 1 — Copy account for payment
+</h3>
+
+<p>
+<b>Payment Channel:</b>
+{{ bank_name }}
+</p>
+
+<p>
+<b>Account Name:</b>
+{{ bank_account_name }}
+</p>
+
+<p>
+<b>Account Number:</b>
+{{ bank_account_number }}
+</p>
+
 </div>
+
+<form method="POST">
+
+<input
+class="field"
+type="number"
+value="{{ plan.amount }}"
+readonly
+name="amount"
+>
+
+<input
+class="field"
+name="reference"
+placeholder="Transaction / reference number"
+required
+>
+
+<button class="btn btn-green">
+Submit Payment
+</button>
+
+</form>
+
+</div>
+
 
 {% elif page == "wallet" %}
 
 <div class="card">
-    <h1>💼 Wallet</h1>
-    <h2>{{ "%.2f"|format(current_user["balance"]) }} ETB</h2>
-    <p>Reserved: {{ "%.2f"|format(current_user["reserved_balance"]) }} ETB</p>
+
+<h1>💼 Wallet</h1>
+
+<h2>
+{{ "%.2f"|format(current_user["balance"]) }} ETB
+</h2>
+
+<p>
+Reserved:
+{{ "%.2f"|format(current_user["reserved_balance"]) }}
+ETB
+</p>
+
 </div>
 
+
 <div class="card">
+
 <h2>Deposit History</h2>
+
 <div class="table-wrap">
+
 <table>
-<tr><th>Amount</th><th>Reference</th><th>Status</th><th>Date</th></tr>
+
+<tr>
+<th>Amount</th>
+<th>Reference</th>
+<th>Status</th>
+<th>Date</th>
+</tr>
+
 {% for d in deposits %}
+
 <tr>
-<td>{{ "%.2f"|format(d.amount) }} ETB</td>
-<td>{{ d.reference }}</td>
-<td><span class="badge {{ d.status|lower }}">{{ d.status }}</span></td>
-<td>{{ d.created_at }}</td>
+
+<td>
+{{ "%.2f"|format(d.amount) }} ETB
+</td>
+
+<td>
+{{ d.reference }}
+</td>
+
+<td>
+<span class="badge {{ d.status|lower }}">
+{{ d.status }}
+</span>
+</td>
+
+<td>
+{{ d.created_at }}
+</td>
+
 </tr>
+
+{% else %}
+
+<tr>
+<td colspan="4">
+No deposits yet.
+</td>
+</tr>
+
 {% endfor %}
+
 </table>
-</div>
+
 </div>
 
+</div>
+
+
 <div class="card">
+
 <h2>Withdrawal History</h2>
+
 <div class="table-wrap">
+
 <table>
-<tr><th>Amount</th><th>Fee</th><th>Receive</th><th>Status</th><th>Date</th></tr>
-{% for w in withdrawals %}
+
 <tr>
-<td>{{ "%.2f"|format(w.amount) }} ETB</td>
-<td>{{ "%.2f"|format(w.fee) }} ETB</td>
-<td>{{ "%.2f"|format(w.receive_amount) }} ETB</td>
-<td><span class="badge {{ w.status|lower }}">{{ w.status }}</span></td>
-<td>{{ w.created_at }}</td>
+<th>Amount</th>
+<th>Fee</th>
+<th>Receive</th>
+<th>Status</th>
+<th>Date</th>
 </tr>
+
+{% for w in withdrawals %}
+
+<tr>
+
+<td>
+{{ "%.2f"|format(w.amount) }} ETB
+</td>
+
+<td>
+{{ "%.2f"|format(w.fee) }} ETB
+</td>
+
+<td>
+{{ "%.2f"|format(w.receive_amount) }} ETB
+</td>
+
+<td>
+<span class="badge {{ w.status|lower }}">
+{{ w.status }}
+</span>
+</td>
+
+<td>
+{{ w.created_at }}
+</td>
+
+</tr>
+
+{% else %}
+
+<tr>
+<td colspan="5">
+No withdrawals yet.
+</td>
+</tr>
+
 {% endfor %}
+
 </table>
-</div>
+
 </div>
 
+</div>
+
+
 <div class="card">
-<h2>Transactions</h2>
+
+<h2>Referral Commissions</h2>
+
 <div class="table-wrap">
+
 <table>
-<tr><th>Type</th><th>Amount</th><th>Description</th><th>Date</th></tr>
-{% for t in transactions %}
+
 <tr>
-<td>{{ t.type }}</td>
-<td>{{ "%.2f"|format(t.amount) }} ETB</td>
-<td>{{ t.description }}</td>
-<td>{{ t.created_at }}</td>
+<th>Level</th>
+<th>Rate</th>
+<th>Amount</th>
+<th>Date</th>
 </tr>
+
+{% for c in commissions %}
+
+<tr>
+
+<td>
+Level {{ c.level }}
+</td>
+
+<td>
+{% if c.level == 1 %}
+25%
+{% elif c.level == 2 %}
+3%
+{% else %}
+2%
+{% endif %}
+</td>
+
+<td class="commission">
++{{ "%.2f"|format(c.amount) }} ETB
+</td>
+
+<td>
+{{ c.created_at }}
+</td>
+
+</tr>
+
+{% else %}
+
+<tr>
+<td colspan="4">
+No commissions yet.
+</td>
+</tr>
+
 {% endfor %}
+
 </table>
+
 </div>
+
 </div>
+
+
+<div class="card">
+
+<h2>Transactions</h2>
+
+<div class="table-wrap">
+
+<table>
+
+<tr>
+<th>Type</th>
+<th>Amount</th>
+<th>Description</th>
+<th>Date</th>
+</tr>
+
+{% for t in transactions %}
+
+<tr>
+
+<td>{{ t.type }}</td>
+
+<td>
+{{ "%.2f"|format(t.amount) }} ETB
+</td>
+
+<td>{{ t.description }}</td>
+
+<td>{{ t.created_at }}</td>
+
+</tr>
+
+{% else %}
+
+<tr>
+<td colspan="4">
+No transactions yet.
+</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</div>
+
 
 {% elif page == "withdraw" %}
 
 <div class="card">
+
 <h1>💸 Withdraw</h1>
-<p>Withdrawal window: <b>9:00 AM – 5:00 PM</b></p>
-<p>Minimum withdrawal: <b>200 ETB</b></p>
-<p>Withdrawal fee: <b>10%</b></p>
+
+<p>
+Withdrawal window:
+<b>9:00 AM – 5:00 PM</b>
+</p>
+
+<p>
+Minimum withdrawal:
+<b>200 ETB</b>
+</p>
+
+<p>
+Withdrawal fee:
+<b>10%</b>
+</p>
 
 {% if bank_account %}
+
 <div class="bank-box">
-    <h3>Receiving Account</h3>
-    <p>{{ bank_account.bank_name }}</p>
-    <p>{{ bank_account.account_name }}</p>
-    <p>{{ bank_account.account_number }}</p>
+
+<h3>Receiving Account</h3>
+
+<p>
+{{ bank_account.bank_name }}
+</p>
+
+<p>
+{{ bank_account.account_name }}
+</p>
+
+<p>
+{{ bank_account.account_number }}
+</p>
+
 </div>
 
 <form method="POST">
-    <input class="field" type="number" step="0.01" min="200" name="amount" placeholder="Withdrawal amount (ETB)" required>
-    <button class="btn btn-green">Request Withdrawal</button>
+
+<input
+class="field"
+type="number"
+step="0.01"
+min="200"
+name="amount"
+placeholder="Withdrawal amount (ETB)"
+required
+>
+
+<button class="btn btn-green">
+Request Withdrawal
+</button>
+
 </form>
+
 {% else %}
-<div class="flash">Please bind your bank account first.</div>
-<a class="btn btn-blue" href="{{ url_for('bank_bind') }}">Bank Bind</a>
-{% endif %}
+
+<div class="flash">
+Please bind your bank account first.
 </div>
+
+<a
+class="btn btn-blue"
+href="{{ url_for('bank_bind') }}"
+>
+Bank Bind
+</a>
+
+{% endif %}
+
+</div>
+
 
 {% elif page == "bank" %}
 
 <div class="card">
+
 <h1>🏦 Bank Bind</h1>
 
 <form method="POST">
-    <input class="field" name="bank_name" value="{{ bank_account.bank_name if bank_account else '' }}" placeholder="Bank Name" required>
-    <input class="field" name="account_name" value="{{ bank_account.account_name if bank_account else '' }}" placeholder="Account Name" required>
-    <input class="field" name="account_number" value="{{ bank_account.account_number if bank_account else '' }}" placeholder="Account Number" required>
-    <button class="btn btn-blue">Save Bank Details</button>
+
+<input
+class="field"
+name="bank_name"
+value="{{ bank_account.bank_name if bank_account else '' }}"
+placeholder="Bank Name"
+required
+>
+
+<input
+class="field"
+name="account_name"
+value="{{ bank_account.account_name if bank_account else '' }}"
+placeholder="Account Name"
+required
+>
+
+<input
+class="field"
+name="account_number"
+value="{{ bank_account.account_number if bank_account else '' }}"
+placeholder="Account Number"
+required
+>
+
+<button class="btn btn-blue">
+Save Bank Details
+</button>
+
 </form>
+
 </div>
+
 
 {% elif page == "team" %}
 
 <div class="card">
-<h1>👥 My Team</h1>
-<p>Your referral code: <b>{{ referral_code }}</b></p>
 
-<input class="field" value="{{ referral_url }}" readonly onclick="this.select()">
-<button class="btn btn-blue" onclick="navigator.clipboard.writeText('{{ referral_url }}')">
+<h1>👥 My Team</h1>
+
+<p>
+Your referral code:
+<b>{{ referral_code }}</b>
+</p>
+
+<input
+class="field"
+value="{{ referral_url }}"
+readonly
+onclick="this.select()"
+>
+
+<button
+class="btn btn-blue"
+onclick="navigator.clipboard.writeText('{{ referral_url }}')"
+>
 Copy Referral Link
 </button>
+
+<div class="commission-box">
+
+<h3>Commission Rates</h3>
+
+<p>
+Level 1 — <b>25%</b>
+</p>
+
+<p>
+Level 2 — <b>3%</b>
+</p>
+
+<p>
+Level 3 — <b>2%</b>
+</p>
+
 </div>
 
+</div>
+
+
 <div class="grid">
+
 <div class="card">
+
 <h2>Level 1</h2>
+
 {% for u in level1 %}
 <p>{{ u.username }}</p>
 {% else %}
 <p>No Level 1 members yet.</p>
 {% endfor %}
+
 </div>
 
+
 <div class="card">
+
 <h2>Level 2</h2>
+
 {% for u in level2 %}
 <p>{{ u.username }}</p>
 {% else %}
 <p>No Level 2 members yet.</p>
 {% endfor %}
+
 </div>
 
+
 <div class="card">
+
 <h2>Level 3</h2>
+
 {% for u in level3 %}
 <p>{{ u.username }}</p>
 {% else %}
 <p>No Level 3 members yet.</p>
 {% endfor %}
+
 </div>
+
 </div>
+
+
+{% if commissions %}
+
+<div class="card">
+
+<h2>Commission History</h2>
+
+<div class="table-wrap">
+
+<table>
+
+<tr>
+<th>Level</th>
+<th>Amount</th>
+<th>Date</th>
+</tr>
+
+{% for c in commissions %}
+
+<tr>
+
+<td>
+Level {{ c.level }}
+</td>
+
+<td class="commission">
++{{ "%.2f"|format(c.amount) }} ETB
+</td>
+
+<td>
+{{ c.created_at }}
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</div>
+
+{% endif %}
+
 
 {% endif %}
 
 </main>
 
+
 <div class="bottom">
-<a href="{{ url_for('dashboard') }}">🏠<br>Home</a>
-<a href="{{ url_for('wallet') }}">💰<br>Wallet</a>
-<a href="{{ url_for('dashboard') }}">📊<br>Plans</a>
-<a href="{{ url_for('team') }}">👤<br>My</a>
+
+<a href="{{ url_for('dashboard') }}">
+🏠<br>Home
+</a>
+
+<a href="{{ url_for('wallet') }}">
+💰<br>Wallet
+</a>
+
+<a href="{{ url_for('dashboard') }}">
+📊<br>Plans
+</a>
+
+<a href="{{ url_for('team') }}">
+👤<br>My Team
+</a>
+
 </div>
 
 {% endif %}
